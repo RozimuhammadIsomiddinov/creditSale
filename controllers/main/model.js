@@ -1,11 +1,11 @@
 const pool = require("../../config/dbconfig");
 
 const selectIncomeQuery = `
-    SELECT SUM(cost) FROM users;
+    SELECT SUM(cost) FROM users WHERE payment_status != false;
 `;
 
 const selectUsersQuery = `
-      SELECT COUNT(*)  FROM users;
+      SELECT COUNT(*)  FROM users WHERE payment_status != false;
 `;
 
 const selectPrimaryPaymentQuery = `
@@ -94,7 +94,7 @@ const selectThisMonth = async () => {
   }
 };
 
-const selectMonthPaid = async (page = 1, limit = 2) => {
+const selectMonthPaid = async (page = 1, limit = 20) => {
   try {
     const offset = (page - 1) * limit;
     const { rows } = await pool.query(selectMonthUsersQuery, [limit, offset]);

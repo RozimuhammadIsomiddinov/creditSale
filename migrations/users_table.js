@@ -13,7 +13,7 @@ const createUsersTable = async () => {
       workplace VARCHAR(200),
       time INTEGER,
       primary_payment INTEGER,
-      payment_status BOOLEAN DEFAULT FALSE, 
+      payment_status BOOLEAN DEFAULT TRUE, 
       passport_series VARCHAR(20),
       description TEXT,
       given_day TIMESTAMP DEFAULT NOW(), 

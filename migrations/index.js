@@ -2,7 +2,7 @@ const { createUsersTable, dropUsersTable } = require("./users_table");
 
 const { createPaymentsTable, dropPaymentsTable } = require("./payments_table");
 
-const { createReturnsTable, dropReturnsTable } = require("./returns");
+const { createReturnsTable, dropReturnsTable } = require("./returns_table");
 
 // Migrationni bajarish funksiyasi
 const runMigration = async () => {

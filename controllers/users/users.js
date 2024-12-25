@@ -111,7 +111,7 @@ const updateUser = async (req, res) => {
     !address ||
     !workplace ||
     !time ||
-    !primary_payment ||
+    primary_payment === undefined ||
     !passport_series
   ) {
     return res

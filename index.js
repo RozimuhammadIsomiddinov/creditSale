@@ -2,26 +2,9 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const {
-  getAllUsers,
-  getByIdUser,
-  addUser,
-  updateUser,
-} = require("./controllers/users/users");
-
-const {
-  addPaymentAmount,
-  getPaymentHistory,
-} = require("./controllers/payments/payment");
-
-const {
-  getAllMoney,
-  getPrimaryPayment,
-  getPrimaryPaymentUsers,
-  getThisMonthMoney,
-  getMonthUsers,
-} = require("./controllers/main/main");
-
+const routerUsers = require("./routers/users");
+const routerPayment = require("./routers/payments");
+const routerReturns = require("./routers/returns");
 const app = express();
 
 app.use(express.json());
@@ -33,20 +16,33 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
-app.get("/users", getAllUsers);
-app.get("/users/:id", getByIdUser);
-app.get("/user-payment-history/:id", getPaymentHistory);
-app.get("/all-money", getAllMoney);
-app.get("/primary-payment", getPrimaryPayment);
-app.get("/primary-payment-users", getPrimaryPaymentUsers);
-app.get("/view-month-income", getThisMonthMoney);
-app.get("/view-month-users", getMonthUsers);
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "CreditSale API",
+      version: "1.0.0",
+      description: "This is the API documentation for CreditSale.",
+    },
+    servers: [
+      {
+        url: "http://localhost:7045",
+      },
+    ],
+  },
+  apis: ["./routers/*.js"], // Hujjatlangan fayllar joylashuvi
+};
 
-app.post("/add-user", addUser);
-app.post("/add-payment/:id", addPaymentAmount);
+const specs = swaggerJsdoc(options);
 
-app.put("/update-user/:id", updateUser);
+app.use("/users", routerUsers);
+app.use("/payment", routerPayment);
+app.use("/returns", routerReturns);
+
+app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

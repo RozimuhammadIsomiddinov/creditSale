@@ -7,8 +7,12 @@ const selectReturnsQuery = `
 const countReturnsQuery = `
     SELECT COUNT(*) FROM returns;
 `;
+
 const productNameQuery = `
     SELECT *FROM users WHERE id= $1 AND product_name= $2;
+`;
+const updateUserStatusQuery = `
+    UPDATE users SET payment_status = false, description = $2 WHERE id = $1;
 `;
 const createQuery = `
         INSERT INTO returns (
@@ -40,20 +44,14 @@ const getCount = async () => {
 };
 
 const createReturns = async (returnData) => {
-  const { user_id, product_name } = returnData;
+  const { user_id, product_name, reason } = returnData;
 
   try {
-    const condition = await pool.query(productNameQuery, [
-      user_id,
-      product_name,
-    ]);
-    if (condition.rows.length === 0) {
-      throw new Error("User ID yoki product_name noto'g'ri.");
-    }
+    await pool.query(updateUserStatusQuery, [user_id, reason]);
     const res = await pool.query(createQuery, [user_id, product_name]);
     return res.rows;
   } catch (e) {
     console.error("Error executing query by createReturns", e.message);
   }
 };
-module.exports = { getAll, getCount, createReturns };
+module.exports = { getAll, getCount, createReturns, productNameQuery };
