@@ -45,6 +45,4 @@ app.use("/returns", routerReturns);
 app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://3.77.237.29:3000/`);
-});
+app.listen(PORT);

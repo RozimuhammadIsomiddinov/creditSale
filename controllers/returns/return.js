@@ -28,7 +28,9 @@ const getCountReturns = async (req, res) => {
     const result = await getCount();
     res.status(200).json(result);
   } catch (e) {
-    console.error("Error from getCountReturns", e.message);
+    res
+      .status(400)
+      .json({ message: "Error from getCountReturns", error: e.message });
   }
 };
 
