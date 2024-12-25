@@ -79,7 +79,7 @@ const addUser = async (req, res) => {
     });
     return res.status(201).json({
       message: "User added successfully!",
-      user: newUser,
+      user: newUser ? newUser : "user doesn't saved",
     });
   } catch (e) {
     res.status(400).json({ message: "Error from addUser", error: e.message });

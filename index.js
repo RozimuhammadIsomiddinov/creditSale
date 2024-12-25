@@ -29,11 +29,11 @@ const options = {
     },
     servers: [
       {
-        url: "http://3.77.237.29:3000",
+        url: "http://localhost:7045",
       },
     ],
   },
-  apis: ["./routers/*.js"], // Hujjatlangan fayllar joylashuvi
+  apis: ["./routers/*.js"],
 };
 
 const specs = swaggerJsdoc(options);
