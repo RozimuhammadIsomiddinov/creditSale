@@ -1,0 +1,14 @@
+version: '3'
+services:
+  app:
+    image: creditsale:latest
+    container_name: app
+    ports:
+      - "3000:7045"
+    restart: always
+    networks:
+      - creditsale
+
+networks:
+  creditsale:
+    external: true
