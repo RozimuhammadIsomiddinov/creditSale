@@ -1,4 +1,5 @@
 const pool = require("../../config/dbconfig");
+const { loggerReturns } = require("../../logs/log");
 
 const selectReturnsQuery = `
     SELECT *FROM returns LIMIT $1 OFFSET $2
@@ -12,7 +13,7 @@ const productNameQuery = `
     SELECT *FROM users WHERE id= $1 AND product_name= $2;
 `;
 const updateUserStatusQuery = `
-    UPDATE users SET payment_status = false, description = $2 WHERE id = $1;
+    UPDATE users SET payment_status = false, description = $2 WHERE id = $1 RETURNING *;
 `;
 const createQuery = `
         INSERT INTO returns (
@@ -47,7 +48,8 @@ const createReturns = async (returnData) => {
   const { user_id, product_name, reason } = returnData;
 
   try {
-    await pool.query(updateUserStatusQuery, [user_id, reason]);
+    const res1 = await pool.query(updateUserStatusQuery, [user_id, reason]);
+    loggerReturns.info(res1.rows[0]);
     const res = await pool.query(createQuery, [user_id, product_name]);
     return res.rows;
   } catch (e) {

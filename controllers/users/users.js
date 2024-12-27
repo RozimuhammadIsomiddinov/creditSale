@@ -1,3 +1,4 @@
+const { logger } = require("../../logs/log");
 const { getAll, getById, createUser, updateModel } = require("./model");
 
 const getAllUsers = async (req, res) => {
@@ -77,6 +78,9 @@ const addUser = async (req, res) => {
       description,
       given_day: given_day || new Date(),
     });
+
+    logger.info(newUser);
+
     return res.status(201).json({
       message: "User added successfully!",
       user: newUser ? newUser : "user doesn't saved",
@@ -136,6 +140,7 @@ const updateUser = async (req, res) => {
       given_day,
       monthly_income,
     });
+    logger.info(result);
     return res.status(201).json({
       message: "User updated successfully!",
       result,

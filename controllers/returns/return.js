@@ -1,4 +1,5 @@
 const pool = require("../../config/dbconfig");
+const { loggerReturns } = require("../../logs/log");
 const {
   getAll,
   getCount,
@@ -50,6 +51,7 @@ const addReturn = async (req, res) => {
         .json({ message: "User ID yoki product_name noto'g'ri." });
     }
     const result = await createReturns({ user_id: id, product_name, reason });
+    loggerReturns.info(result);
     return res.status(201).json({
       message: result
         ? "Return item added successfully!"
