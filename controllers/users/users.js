@@ -1,5 +1,13 @@
 const { logger } = require("../../logs/log");
-const { getAll, getById, createUser, updateModel } = require("./model");
+const { getByNameCollector } = require("../collector/model");
+const { getByName } = require("../zone/model");
+const {
+  getAll,
+  getById,
+  createUser,
+  updateModel,
+  deleteUser,
+} = require("./model");
 
 const getAllUsers = async (req, res) => {
   const { page } = req.query;
@@ -40,29 +48,41 @@ const addUser = async (req, res) => {
     cost,
     phone_number,
     phone_number2,
-    address,
     workplace,
     time,
-    primary_payment,
+    zone,
+    seller,
+    collector,
     passport_series,
     description,
     given_day,
   } = req.body;
+
   if (
     !name ||
     !product_name ||
     !cost ||
     !phone_number ||
-    !address ||
+    !zone ||
+    !seller ||
     !workplace ||
     !time ||
-    primary_payment === undefined ||
+    !collector ||
     !passport_series
   ) {
     return res
       .status(400)
       .json({ message: "Please provide all required fields." });
   }
+
+  const res1 = await getByName(zone);
+  const res2 = await getByNameCollector(collector);
+
+  if (res1.length == 0 || res2.length == 0)
+    return res.status(404).json({
+      message:
+        "Zone or collector name has not\n please enter true zone or collector name",
+    });
   try {
     const newUser = await createUser({
       name,
@@ -70,10 +90,11 @@ const addUser = async (req, res) => {
       cost,
       phone_number,
       phone_number2,
-      address,
       workplace,
       time,
-      primary_payment,
+      zone,
+      seller,
+      collector,
       passport_series,
       description,
       given_day: given_day || new Date(),
@@ -98,10 +119,11 @@ const updateUser = async (req, res) => {
     cost,
     phone_number,
     phone_number2,
-    address,
     workplace,
     time,
-    primary_payment,
+    zone,
+    seller,
+    collector,
     passport_series,
     description,
     given_day,
@@ -112,18 +134,25 @@ const updateUser = async (req, res) => {
     !product_name ||
     !cost ||
     !phone_number ||
-    !address ||
+    !seller ||
+    !zone ||
     !workplace ||
     !time ||
-    primary_payment === undefined ||
+    !collector ||
     !passport_series
   ) {
     return res
       .status(400)
       .json({ message: "Please provide all required fields." });
   }
-  const monthly_income = (cost - primary_payment) / time;
+  const res1 = await getByName(zone);
+  const res2 = await getByNameCollector(collector);
 
+  if (res1.length == 0 || res2.length == 0)
+    return res.status(404).json({
+      message:
+        "Zone or collector name has not\n please enter true zone or collector name",
+    });
   try {
     const result = await updateModel(id, {
       name,
@@ -131,14 +160,14 @@ const updateUser = async (req, res) => {
       cost,
       phone_number,
       phone_number2,
-      address,
       workplace,
       time,
-      primary_payment,
+      zone,
+      seller,
+      collector,
       passport_series,
       description,
-      given_day,
-      monthly_income,
+      given_day: given_day || new Date(),
     });
     logger.info(result);
     return res.status(201).json({
@@ -151,4 +180,32 @@ const updateUser = async (req, res) => {
       .json({ message: "Error from updateUser", error: e.message });
   }
 };
-module.exports = { getAllUsers, getByIdUser, addUser, updateUser };
+
+const deleteUserByID = async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ message: "please send user's id" });
+  try {
+    const result1 = await getById(id);
+
+    if (result1.length == 0)
+      return res.status(404).json({ message: "user has not" });
+
+    const result2 = await deleteUser(id);
+    console.log(result2);
+    if (result2 != 1)
+      return res.status(400).json({ message: "user not found" });
+
+    res.status(200).json({ message: "user has succesfully deleted" });
+  } catch (e) {
+    res
+      .status(400)
+      .json({ message: "Error from deleteUserByID", error: e.message });
+  }
+};
+module.exports = {
+  getAllUsers,
+  getByIdUser,
+  addUser,
+  updateUser,
+  deleteUserByID,
+};

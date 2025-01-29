@@ -1,13 +1,21 @@
 const pool = require("../../config/dbconfig");
+const cron = require("node-cron");
+
+const paymentHistoryQuery = `
+  SELECT *FROM payments WHERE user_id = $1
+`;
 
 const insertPaymentHistoryQuery = `
     INSERT INTO payments (
     user_id,
+    collector,
+    payment_month,
     payment_amount,
-    payment_date
+    payment_date,
+    description
     )
     VALUES(
-    $1,$2,NOW()
+    $1,$2,$3,$4,NOW(),$5
     )
     RETURNING *;
 `;
@@ -20,26 +28,52 @@ const updateUserPaymentQuery = `
     WHERE id = $2
     RETURNING *;
 `;
-const paymentHistoryQuery = `
-  SELECT *FROM payments WHERE user_id = $1
-`;
+
 // To'lov qo'shish funksiyasi
-const addPayment = async (userId, paymentAmount) => {
+const addPayment = async (
+  userId,
+  collector,
+  payment_month,
+  paymentAmount,
+  description
+) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN"); // Transactionni boshlash
 
-    // 1. `payments` jadvaliga yangi yozuv qo'shish
+    //`payments` jadvaliga yangi yozuv qo'shish
     const payment = await client.query(insertPaymentHistoryQuery, [
       userId,
+      collector,
+      payment_month,
       paymentAmount,
+      description,
     ]);
 
-    // 2. `users.payment` ustunini yangilash
+    // `users.payment` ustunini yangilash
     const updatedUser = await client.query(updateUserPaymentQuery, [
       paymentAmount,
       userId,
     ]);
+    //har kuni soat 00:00 da tekshirib, 30 kun o'tgan user_id lar uchun payment_status ni false qilib qo'yadi
+    cron.schedule("0 0 * * *", async () => {
+      try {
+        const result = await pool.query(`
+      UPDATE users
+      SET payment_status = false
+      WHERE NOW() - INTERVAL '30 days' >= (SELECT MAX(payment_date) FROM payments WHERE payments.user_id = users.id)
+      RETURNING *;
+    `);
+
+        if (result.rows.length > 0) {
+          console.log("Payment status updated for users:", result.rows);
+        } else {
+          console.log("No users found for payment status reset.");
+        }
+      } catch (err) {
+        console.error("Error resetting payment status:", err.message);
+      }
+    });
 
     await client.query("COMMIT"); // Transactionni yakunlash
     return {

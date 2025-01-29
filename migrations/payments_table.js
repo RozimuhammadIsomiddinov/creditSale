@@ -5,9 +5,11 @@ const createPaymentsTable = async () => {
     CREATE TABLE IF NOT EXISTS payments (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      payment_amount FLOAT NOT NULL, -- Foydalanuvchi qancha to'lagan
-      payment_date TIMESTAMP DEFAULT NOW(), -- To'lov sanasi
-      description TEXT
+      collector VARCHAR(200) NOT NULL REFERENCES collector(collector_name) ON DELETE CASCADE,
+      payment_month VARCHAR(50) NOT NULL,  --qaysi oy uchun qilgan to'lovi
+      payment_amount NUMERIC(20, 2) NOT NULL,   -- qancha to'lov qilgan
+      payment_date TIMESTAMP DEFAULT NOW(),  --qachon to'lov qilgan
+      description VARCHAR(500)
     ); 
   `;
   try {

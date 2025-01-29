@@ -1,114 +1,217 @@
 const pool = require("../../config/dbconfig");
-
-const selectIncomeQuery = `
-    SELECT SUM(cost) FROM users WHERE payment_status != false;
+const { getById } = require("../users/model");
+//1.
+//hamma pul
+const allMoneyQuery = `
+    SELECT SUM(cost) FROM users;
+`;
+//nechta userga sotilgan
+const allCountQuery = `
+    SELECT COUNT(*) FROM users;
 `;
 
-const selectUsersQuery = `
-      SELECT COUNT(*)  FROM users WHERE payment_status != false;
+//to'laganlar
+const payedUsersMoneyQuery = `
+    SELECT SUM(payment) FROM users;
 `;
 
-const selectPrimaryPaymentQuery = `
-    SELECT COUNT(*) FROM users WHERE primary_payment!=0;
+//to'lagan userlar
+const payedUsersCountQuery = `
+    SELECT COUNT(*) FROM users WHERE payment != 0; 
 `;
 
-const sumPrimaryPaymentQuery = `
-    SELECT SUM(primary_payment) FROM users;
+//2.
+//to'lamaganlar  yani qancha to'lanishi kerak
+const selectNotPayedUsersQuery = `
+    SELECT * FROM users WHERE payment = 0 LIMIT $1 OFFSET $2;
 `;
 
-const selectPrimaryUsersQuery = `
-    SELECT *FROM users WHERE primary_payment!=0 LIMIT $1 OFFSET $2;
+//to'lamagan userlar soni
+const notPayedUsersQuery = `
+    SELECT COUNT(*) FROM users WHERE payment = 0;
 `;
 
-const sumThisMonth = `
-SELECT SUM(payment) 
-  FROM users 
-    WHERE DATE_PART('year', given_day) = DATE_PART('year', CURRENT_DATE)
-    AND DATE_PART('month', given_day) = DATE_PART('month', CURRENT_DATE);
+//3.
+//bu oy qancha to'laganlar
+const sumMonthQuery = `
+    SELECT SUM(payment_amount) 
+    FROM payments AS p
+    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
 `;
 
-const countMonthUsersQuery = `
-SELECT u.id,
-       u.name,
-       u.phone_number,
-       p.payment_amount,
-       p.payment_date
-FROM payments p
-JOIN users u ON u.id = p.user_id
-WHERE EXTRACT(YEAR FROM p.payment_date) = EXTRACT(YEAR FROM CURRENT_DATE)
-  AND EXTRACT(MONTH FROM p.payment_date) = EXTRACT(MONTH FROM CURRENT_DATE);
-  `;
-
-const selectMonthUsersQuery = `
-   SELECT u.id,
-       u.name,
-       u.phone_number,
-       p.payment_amount,
-       p.payment_date
-FROM payments p
-JOIN users u ON u.id = p.user_id
-WHERE EXTRACT(YEAR FROM p.payment_date) = EXTRACT(YEAR FROM CURRENT_DATE)
-  AND EXTRACT(MONTH FROM p.payment_date) = EXTRACT(MONTH FROM CURRENT_DATE)
-  LIMIT $1 OFFSET $2;
+const countMonthQuery = `
+  SELECT COUNT(*) 
+    FROM payments AS p
+    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
+`;
+// bu oy to'laganlar ro'yhati
+const selectMonthQuery = `
+    SELECT user_id 
+    FROM payments AS p
+    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
+    LIMIT $1 OFFSET $2;
+`;
+//4.
+// bugun to'laganlar
+const sumDayQuery = `
+    SELECT SUM(payment_amount) 
+    FROM payments AS p
+    WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
 
+//bugun pul nechi marta to'langan soni
+const countDayQuery = `
+  SELECT COUNT(*) 
+    FROM payments AS p
+    WHERE DATE(p.payment_date) = CURRENT_DATE;
+`;
+const selectDayQuery = `
+ SELECT user_id 
+  FROM payments AS p
+    WHERE DATE(p.payment_date) = CURRENT_DATE
+    LIMIT $1 OFFSET $2;
+`;
+//1.
 const selectIncome = async () => {
   try {
-    const { rows: incomeRows } = await pool.query(selectIncomeQuery);
-
-    const { rows: userRows } = await pool.query(selectUsersQuery);
-
-    return { income: incomeRows, users: userRows };
+    const res = await pool.query(allMoneyQuery);
+    return res.rows[0];
   } catch (e) {
     console.error("Error executing query by selectIncome", e.message);
   }
 };
-
-const selectPrimaryPayment = async () => {
+const selectIncomeUsers = async () => {
   try {
-    const { rows: select } = await pool.query(selectPrimaryPaymentQuery);
-    const { rows: count } = await pool.query(sumPrimaryPaymentQuery);
-    return { select, count };
+    const res = await pool.query(allCountQuery);
+    return res.rows[0];
   } catch (e) {
-    console.error("Error executing query by selectPriamryPayment", e.message);
+    console.error("Error executing query in getincomeusers", e.message);
   }
 };
 
-const selectPrimaryUsers = async (page = 1, limit = 20) => {
+const payedMoneyUsers = async () => {
   try {
-    const offset = (page - 1) * limit;
-    const res = await pool.query(selectPrimaryUsersQuery, [limit, offset]);
+    const res = await pool.query(payedUsersMoneyQuery);
+    return res.rows[0];
+  } catch (e) {
+    console.error("Error executing query in payedUsers", e.message);
+  }
+};
+const payedCountUsers = async () => {
+  try {
+    const res = await pool.query(payedUsersCountQuery);
+    return res.rows[0];
+  } catch (e) {
+    console.error("Error executing query in payedCountUsers", e.message);
+  }
+};
+
+//2.
+const notPayedUsers = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+
+  try {
+    const res = await pool.query(selectNotPayedUsersQuery, [limit, offset]);
     return res.rows;
   } catch (e) {
-    console.error("Error executing query by selectPriamryUsers", e.message);
+    console.error("Error executing query in notpayedusers", e.message);
   }
 };
 
-const selectThisMonth = async () => {
+const notPayedUsersCount = async () => {
   try {
-    const res = await pool.query(sumThisMonth);
-
-    return res.rows;
+    const res = await pool.query(notPayedUsersQuery);
+    return res.rows[0];
   } catch (e) {
-    console.error("Error executing query by selectThisMonth", e.message);
+    console.error("Error executing query in notpayed count", e.message);
   }
 };
 
-const selectMonthPaid = async (page = 1, limit = 20) => {
+//3.
+
+const sumMonth = async () => {
   try {
-    const offset = (page - 1) * limit;
-    const { rows } = await pool.query(selectMonthUsersQuery, [limit, offset]);
-    const res = await pool.query(countMonthUsersQuery);
-    return { rows, res };
+    const res = await pool.query(sumMonthQuery);
+    return res.rows[0];
   } catch (e) {
-    console.error("Error executing query by selectTMonthPaid", e.message);
+    console.error("Error executing query in summonth", e.message);
+  }
+};
+
+const selectMonth = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+
+  try {
+    const { rows } = await pool.query(selectMonthQuery, [limit, offset]);
+    //bir xil id liklarni bitta qildim yani faqat qaysi user to'lov qilganini ko'rsatdim
+    const uniqueUserIds = [...new Set(rows.map((item) => item.user_id))];
+    const results = await Promise.all(
+      uniqueUserIds.map((userId) => getById(userId))
+    );
+
+    return results;
+  } catch (e) {
+    console.error("Error executing query in selectMonth", e.message);
+  }
+};
+
+const countMonth = async () => {
+  try {
+    const res = await pool.query(countMonthQuery);
+    return res.rows[0];
+  } catch (e) {
+    console.error("Error executing query by countMonth", e.message);
+  }
+};
+
+//4.
+const sumDay = async () => {
+  try {
+    const res = await pool.query(sumDayQuery);
+    return res.rows[0];
+  } catch (e) {
+    console.error("Error executing query by sumday", e.message);
+  }
+};
+
+const countDay = async () => {
+  try {
+    const res = await pool.query(countDayQuery);
+    return res.rows[0];
+  } catch (e) {
+    console.error("Error executing query by countday", e.message);
+  }
+};
+
+const selectDay = async (page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+
+  try {
+    const { rows } = await pool.query(selectDayQuery, [limit, offset]);
+
+    //bir xil id liklarni bitta qildim yani faqat qaysi user to'lov qilganini ko'rsatdim
+    const uniqueUserIds = [...new Set(rows.map((item) => item.user_id))];
+    const results = await Promise.all(
+      uniqueUserIds.map((userId) => getById(userId))
+    );
+
+    return results;
+  } catch (e) {
+    console.error("Error executing query by selectday", e.message);
   }
 };
 
 module.exports = {
   selectIncome,
-  selectPrimaryPayment,
-  selectPrimaryUsers,
-  selectThisMonth,
-  selectMonthPaid,
+  selectDay,
+  countDay,
+  sumDay,
+  countMonth,
+  selectMonth,
+  sumMonth,
+  notPayedUsersCount,
+  notPayedUsers,
+  payedCountUsers,
+  payedMoneyUsers,
+  selectIncomeUsers,
 };

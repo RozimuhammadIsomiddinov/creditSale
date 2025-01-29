@@ -15,16 +15,17 @@ const create = `
     cost,
     phone_number,
     phone_number2,
-    address,
     workplace,
     time,
-    primary_payment,
+    seller,
+    zone,
+    collector,
     passport_series,
     description,
     given_day,
     monthly_income
     )
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
     RETURNING *;
 `;
 
@@ -36,23 +37,27 @@ const updateQuery = `
         cost = $3,
         phone_number = $4,
         phone_number2 = $5,
-        address = $6,
-        workplace = $7,
-        time = $8,
-        primary_payment = $9,
-        passport_series = $10,
-        description = $11,
-        given_day = $12,
-        monthly_income = $13,
+        workplace = $6,
+        time = $7,
+        seller = $8,
+        zone = $9,
+        collector = $10,
+        passport_series = $11,
+        description = $12,
+        given_day = $13,
+        monthly_income = $14,
         updatedAt = NOW()
-      WHERE id = $14
+      WHERE id = $15
       RETURNING *;
+`;
+const deleteUserQuery = `
+    DELETE FROM users WHERE id = $1;
 `;
 const getAll = async (page = 1, limit = 20) => {
   try {
     const offset = (page - 1) * limit;
     const res = await pool.query(selectAll, [limit, offset]);
-    return res.rows;
+    return res.rowCount; //1
   } catch (e) {
     console.error("Error executing query in getAll", e.message);
   }
@@ -73,15 +78,16 @@ const createUser = async (userData) => {
     cost,
     phone_number,
     phone_number2,
-    address,
     workplace,
     time,
-    primary_payment,
+    zone,
+    seller,
+    collector,
     passport_series,
     description,
     given_day,
   } = userData;
-  const monthly_income = (cost - primary_payment) / time;
+  const monthly_income = cost / time;
   try {
     const res = await pool.query(create, [
       name,
@@ -89,10 +95,11 @@ const createUser = async (userData) => {
       cost,
       phone_number,
       phone_number2,
-      address,
       workplace,
       time,
-      primary_payment,
+      seller,
+      zone,
+      collector,
       passport_series,
       description,
       given_day,
@@ -111,15 +118,16 @@ const updateModel = async (id, userData) => {
     cost,
     phone_number,
     phone_number2,
-    address,
     workplace,
     time,
-    primary_payment,
+    seller,
+    zone,
+    collector,
     passport_series,
     description,
     given_day,
-    monthly_income,
   } = userData;
+  const monthly_income = cost / time;
 
   try {
     const res = await pool.query(updateQuery, [
@@ -128,10 +136,11 @@ const updateModel = async (id, userData) => {
       cost,
       phone_number,
       phone_number2,
-      address,
       workplace,
       time,
-      primary_payment,
+      seller,
+      zone,
+      collector,
       passport_series,
       description,
       given_day,
@@ -143,4 +152,13 @@ const updateModel = async (id, userData) => {
     console.error("Error executing query by updateUser", e.message);
   }
 };
-module.exports = { getAll, getById, createUser, updateModel };
+
+const deleteUser = async (id) => {
+  try {
+    const res = await pool.query(deleteUserQuery, [id]);
+    return res.rowCount;
+  } catch (e) {
+    console.error("Error executing query by deleteUser", e.message);
+  }
+};
+module.exports = { getAll, getById, createUser, updateModel, deleteUser };

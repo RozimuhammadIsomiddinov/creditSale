@@ -19,15 +19,4 @@ const logger = createLogger({
     new transports.File({ filename: path.join(__dirname, "log.txt") }),
   ],
 });
-const loggerReturns = createLogger({
-  level: "info",
-  format: combine(
-    timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    json(),
-    prettyPrint()
-  ),
-  transports: [
-    new transports.File({ filename: path.join(__dirname, "returns.txt") }),
-  ],
-});
-module.exports = { logger, loggerReturns };
+module.exports = { logger };

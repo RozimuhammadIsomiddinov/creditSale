@@ -1,15 +1,31 @@
 const {
   selectIncome,
-  selectPrimaryPayment,
-  selectPrimaryUsers,
-  selectThisMonth,
-  selectMonthPaid,
+  selectDay,
+  countDay,
+  sumDay,
+  countMonth,
+  selectMonth,
+  sumMonth,
+  notPayedUsersCount,
+  notPayedUsers,
+  payedCountUsers,
+  payedMoneyUsers,
+  selectIncomeUsers,
 } = require("./model");
 
 const getAllMoney = async (req, res) => {
   try {
-    const result = await selectIncome();
-    res.status(200).json({ result });
+    const result1 = await selectIncome(); // Barcha pul miqdorini olish
+    const result2 = await selectIncomeUsers(); // Hamma foydalanuvchilar sonini olish
+    const result3 = await payedMoneyUsers(); // To'langan pul miqdorini olish
+    const result4 = await payedCountUsers(); // To'langan foydalanuvchilar sonini olish
+
+    res.status(200).json({
+      all_income: result1,
+      income_users_count: result2,
+      paid_money: result3,
+      paid_users_count: result4,
+    });
   } catch (e) {
     res
       .status(400)
@@ -17,61 +33,58 @@ const getAllMoney = async (req, res) => {
   }
 };
 
-const getPrimaryPayment = async (req, res) => {
-  try {
-    const result = await selectPrimaryPayment();
-    res.status(200).json(result);
-  } catch (e) {
-    res
-      .status(400)
-      .json({ message: "Error from getPrimaryPayment", error: e.message });
-  }
-};
-
-const getPrimaryPaymentUsers = async (req, res) => {
+const getNotPayedUsers = async (req, res) => {
   const { page } = req.query;
-  if (!page)
-    return res.status(400).json({ message: "please send page number" });
-
   try {
-    const result = await selectPrimaryUsers(page);
-    res.status(200).json(result);
+    const { count } = await notPayedUsersCount();
+    const result2 = await notPayedUsers(page ? page : 1);
+
+    res.status(200).json({ count, result: result2 });
   } catch (e) {
     res
       .status(400)
-      .json({ message: "Error from getPrimaryPaymentUsers", error: e.message });
+      .json({ message: "Error from getNotPayedUsers", error: e.message });
   }
 };
 
-const getThisMonthMoney = async (req, res) => {
-  try {
-    const result = await selectThisMonth();
-    res.status(200).json(result);
-  } catch (e) {
-    res
-      .status(400)
-      .json({ message: "Error from getThisMonthMoney", error: e.message });
-  }
-};
-
-const getMonthUsers = async (req, res) => {
+const getMonthSum = async (req, res) => {
   const { page } = req.query;
-  if (!page)
-    return res.status(400).json({ message: "please send page number" });
 
   try {
-    const { rows, res: res1 } = await selectMonthPaid(page);
-    res.status(200).json({ rows, count: res1.rows.length });
+    const { sum } = await sumMonth();
+    const { count } = await countMonth();
+    const result3 = await selectMonth(page ? page : 1);
+
+    res.status(200).json({ sum, count, result: result3 });
   } catch (e) {
     res
       .status(400)
-      .json({ message: "Error from getMonthUsers", error: e.message });
+      .json({ message: "Error from getMonthSum", error: e.message });
   }
 };
+
+const getTodaySum = async (req, res) => {
+  const { page } = req.query;
+
+  try {
+    const { sum } = await sumDay();
+    const { count } = await countDay();
+    const result3 = await selectDay(page ? page : 1);
+
+    res.status(200).json({ sum, count, result: result3 });
+  } catch (e) {
+    res
+      .status(400)
+      .json({ message: "Error from getTodaySum", error: e.message });
+  }
+};
+
 module.exports = {
   getAllMoney,
-  getPrimaryPayment,
-  getPrimaryPaymentUsers,
-  getThisMonthMoney,
-  getMonthUsers,
+
+  getNotPayedUsers,
+
+  getMonthSum,
+
+  getTodaySum,
 };
