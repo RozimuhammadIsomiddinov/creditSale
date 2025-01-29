@@ -57,7 +57,7 @@ const getAll = async (page = 1, limit = 20) => {
   try {
     const offset = (page - 1) * limit;
     const res = await pool.query(selectAll, [limit, offset]);
-    return res.rowCount; //1
+    return res.rows;
   } catch (e) {
     console.error("Error executing query in getAll", e.message);
   }
