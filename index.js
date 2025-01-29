@@ -8,6 +8,7 @@ const routerZone = require("./routers/zones");
 const routerCollector = require("./routers/collector");
 const routerMain = require("./routers/main");
 const routerAdmin = require("./routers/admin");
+const { getByZone } = require("./controllers/sender/sender");
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use("/payment", routerPayment);
 app.use("/zones", routerZone);
 app.use("/collector", routerCollector);
 app.use("/main", routerMain);
+app.get("/excel-download", getByZone);
 
 app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
