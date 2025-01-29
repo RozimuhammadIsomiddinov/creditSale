@@ -6,7 +6,7 @@ const loginMid = async (req, res) => {
   try {
     const result1 = await selectByName(name);
     if (result1.length == 0)
-      return res.status(404).json({ message: "admin not found" });
+      return res.status(404).json({ message: "admin not found", result1 });
 
     const isMatch = await compare(password, result1[0].password);
     if (!isMatch) {
