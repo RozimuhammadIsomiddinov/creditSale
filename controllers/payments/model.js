@@ -24,8 +24,9 @@ const insertPaymentHistoryQuery = `
 const updateUserPaymentQuery = `
     UPDATE users
     SET payment = payment + $1,
-        payment_status = true 
-    WHERE id = $2
+        payment_status = true,
+        collector = $2
+    WHERE id = $3
     RETURNING *;
 `;
 
@@ -53,6 +54,7 @@ const addPayment = async (
     // `users.payment` ustunini yangilash
     const updatedUser = await client.query(updateUserPaymentQuery, [
       paymentAmount,
+      collector,
       userId,
     ]);
     //har kuni soat 00:00 da tekshirib, 30 kun o'tgan user_id lar uchun payment_status ni false qilib qo'yadi
