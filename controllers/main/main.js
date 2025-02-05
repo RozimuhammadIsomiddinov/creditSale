@@ -37,9 +37,12 @@ const getNotPayedUsers = async (req, res) => {
   const { page } = req.query;
   try {
     const { count } = await notPayedUsersCount();
-    const result2 = await notPayedUsers(page ? page : 1);
+    const result1 = await selectIncome();
+    const result2 = await payedMoneyUsers();
+    const sum = result1 - result2;
+    const result3 = await notPayedUsers(page ? page : 1);
 
-    res.status(200).json({ count, result: result2 });
+    res.status(200).json({ count, sum, result: result3 });
   } catch (e) {
     res
       .status(400)
