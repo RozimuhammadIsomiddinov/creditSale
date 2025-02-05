@@ -53,7 +53,7 @@ const updateQuery = `
 const deleteUserQuery = `
     DELETE FROM users WHERE id = $1;
 `;
-const getAll = async (page = 1, limit = 20) => {
+const getAll = async (page = 1, limit = 10) => {
   try {
     const offset = (page - 1) * limit;
     const res = await pool.query(selectAll, [limit, offset]);
