@@ -19,6 +19,9 @@ const insertInto = `
     RETURNING *;
 `;
 
+const filter = `
+    SELECT *FROM users WHERE zone ILIKE $1 LIMIT $2 OFFSET $3;
+`;
 const updateQuery = `
     UPDATE zone 
     SET 
@@ -72,4 +75,22 @@ const updatedZone = async (data) => {
     console.error("Error executing query by updatedZone", e.message);
   }
 };
-module.exports = { getAll, getById, getByName, createZone, updatedZone };
+
+const filterZone = async (zone, page = 1, limit = 20) => {
+  const offset = (page - 1) * limit;
+
+  try {
+    const res = await pool.query(filter, [zone, limit, offset]);
+    return res.rows;
+  } catch (e) {
+    console.error("Error executing query by filterZone", e.message);
+  }
+};
+module.exports = {
+  getAll,
+  getById,
+  getByName,
+  createZone,
+  updatedZone,
+  filterZone,
+};

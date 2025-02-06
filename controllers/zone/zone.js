@@ -1,4 +1,10 @@
-const { getAll, getById, createZone, updatedZone } = require("./model");
+const {
+  getAll,
+  getById,
+  createZone,
+  updatedZone,
+  filterZone,
+} = require("./model");
 
 const getAllZone = async (req, res) => {
   try {
@@ -73,4 +79,30 @@ const updateZone = async (req, res) => {
   }
 };
 
-module.exports = { getAllZone, getByIdZone, addZone, updateZone };
+const filterZoneUsers = async (req, res) => {
+  const { zone } = req.body;
+  if (!zone)
+    return res.status(400).json({ message: "please send a zone name" });
+  const { page } = req.query;
+  if (!page)
+    return res.status(400).json({ message: "please send page number" });
+  try {
+    const result = await filterZone(zone, page);
+    if (result.length == 0) {
+      return res.status(404).json({ message: "users have not yet!" });
+    }
+    res.status(200).json(result);
+  } catch (e) {
+    res
+      .status(400)
+      .json({ message: "Error from filterZoneUsers", error: e.message });
+  }
+};
+
+module.exports = {
+  getAllZone,
+  getByIdZone,
+  addZone,
+  updateZone,
+  filterZoneUsers,
+};

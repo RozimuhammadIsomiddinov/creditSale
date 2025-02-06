@@ -1,7 +1,7 @@
 const pool = require("../../config/dbconfig");
 
 const selectAll = `
-    SELECT *FROM users LIMIT $1 OFFSET $2
+    SELECT *FROM users LIMIT $1 OFFSET $2;
 `;
 
 const selectByIdQuery = `
