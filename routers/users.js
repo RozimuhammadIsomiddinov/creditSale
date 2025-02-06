@@ -150,7 +150,7 @@ const router = express.Router();
  *         type: string
  *       time:
  *         type: string
- *         format: date-time
+ *         format: float
  *       zone:
  *         type: string
  *       seller:
