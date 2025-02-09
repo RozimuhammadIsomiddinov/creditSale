@@ -50,12 +50,10 @@ const getNotPayedUsers = async (req, res) => {
 };
 
 const getMonthSum = async (req, res) => {
-  const { page } = req.query;
-
   try {
     const { sum } = await sumMonth();
     const { count } = await countMonth();
-    const result3 = await selectMonth(page ? page : 1);
+    const result3 = await selectMonth();
 
     res.status(200).json({ sum, count, result: result3 });
   } catch (e) {

@@ -59,11 +59,15 @@ const getById = async (id) => {
 };
 
 const getByNameCollector = async (name) => {
+  if (!name || typeof name !== "string") {
+    throw new Error("Invalid collector name");
+  }
   try {
     const res = await pool.query(selectByName, [name]);
     return res.rows;
   } catch (e) {
     console.error("Error executing query in getByNameCollector", e.message);
+    throw e;
   }
 };
 const createCollector = async (data) => {

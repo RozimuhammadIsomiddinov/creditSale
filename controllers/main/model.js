@@ -48,8 +48,7 @@ const countMonthQuery = `
 const selectMonthQuery = `
     SELECT user_id 
     FROM payments AS p
-    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
-    LIMIT $1 OFFSET $2;
+    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
 `;
 //4.
 // bugun to'laganlar
@@ -68,9 +67,8 @@ const countDayQuery = `
 const selectDayQuery = `
  SELECT user_id 
   FROM payments AS p
-    WHERE DATE(p.payment_date) = CURRENT_DATE
-    LIMIT $1 OFFSET $2;
-`;
+    WHERE DATE(p.payment_date) = CURRENT_DATE;
+    `;
 //1.
 const selectIncome = async () => {
   try {
@@ -138,11 +136,9 @@ const sumMonth = async () => {
   }
 };
 
-const selectMonth = async (page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-
+const selectMonth = async () => {
   try {
-    const { rows } = await pool.query(selectMonthQuery, [limit, offset]);
+    const { rows } = await pool.query(selectMonthQuery);
     //bir xil id liklarni bitta qildim yani faqat qaysi user to'lov qilganini ko'rsatdim
     const uniqueUserIds = [...new Set(rows.map((item) => item.user_id))];
     const results = await Promise.all(
@@ -183,11 +179,9 @@ const countDay = async () => {
   }
 };
 
-const selectDay = async (page = 1, limit = 20) => {
-  const offset = (page - 1) * limit;
-
+const selectDay = async () => {
   try {
-    const { rows } = await pool.query(selectDayQuery, [limit, offset]);
+    const { rows } = await pool.query(selectDayQuery);
 
     //bir xil id liklarni bitta qildim yani faqat qaysi user to'lov qilganini ko'rsatdim
     const uniqueUserIds = [...new Set(rows.map((item) => item.user_id))];

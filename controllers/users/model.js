@@ -5,7 +5,7 @@ const selectAll = `
 `;
 
 const selectByIdQuery = `
-    SELECT *FROM users WHERE id=$1
+    SELECT *FROM users WHERE id=$1;
 `;
 
 const create = `

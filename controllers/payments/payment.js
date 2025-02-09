@@ -37,11 +37,9 @@ const addPaymentAmount = async (req, res) => {
       message: "collector name has not\n please enter true collector name",
     });
   const amountNumber = parseFloat(amount);
-  if (!amount || typeof amountNumber !== "number" || amount <= 0)
-    return res
-      .status(400)
-      .json({ message: "Please send a valid amount in correct format" });
-
+  if (isNaN(amountNumber)) {
+    return res.status(400).json({ message: "Please send a valid amount" });
+  }
   try {
     const result = await addPayment(
       id,
@@ -56,6 +54,7 @@ const addPaymentAmount = async (req, res) => {
         .status(404)
         .json({ message: "User not found or update failed" });
     }
+
     // Muvaffaqiyatli holatda javob qaytarish
     return res.status(201).json({
       message: "Payment added successfully",
