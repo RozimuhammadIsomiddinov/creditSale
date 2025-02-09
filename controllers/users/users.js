@@ -100,6 +100,9 @@ const addUser = async (req, res) => {
       given_day: given_day || new Date(),
     });
 
+    if (!newUser) {
+      return res.status(400).json({ message: "User was not created." });
+    }
     logger.info(newUser);
 
     return res.status(201).json({
