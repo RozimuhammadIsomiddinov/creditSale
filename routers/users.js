@@ -179,9 +179,9 @@ const router = express.Router();
  */
 
 router.get("/", getAllUsers);
+router.get("/count", countUsers);
 router.get("/:id", getByIdUser);
 router.post("/add", addUser);
 router.put("/update/:id", updateUser);
 router.delete("/delete/:id", deleteUserByID);
-router.get("/count", countUsers);
 module.exports = router;
