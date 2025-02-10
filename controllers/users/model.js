@@ -1,5 +1,8 @@
 const pool = require("../../config/dbconfig");
 
+const countAll = `
+    SELECT COUNT(*) FROM users;
+`;
 const selectAll = `
     SELECT *FROM users LIMIT $1 OFFSET $2;
 `;
@@ -53,6 +56,17 @@ const updateQuery = `
 const deleteUserQuery = `
     DELETE FROM users WHERE id = $1;
 `;
+
+const countAllUsers = async () => {
+  try {
+    const res = await pool.query(countAll);
+    return res.rows[0];
+  } catch (e) {
+    console.error("Error executing query in count", e.message);
+    return null;
+  }
+};
+
 const getAll = async (page = 1, limit = 20) => {
   try {
     const offset = (page - 1) * limit;
@@ -161,4 +175,11 @@ const deleteUser = async (id) => {
     console.error("Error executing query by deleteUser", e.message);
   }
 };
-module.exports = { getAll, getById, createUser, updateModel, deleteUser };
+module.exports = {
+  getAll,
+  getById,
+  createUser,
+  updateModel,
+  deleteUser,
+  countAllUsers,
+};

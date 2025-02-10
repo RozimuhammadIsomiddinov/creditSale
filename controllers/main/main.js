@@ -64,12 +64,11 @@ const getMonthSum = async (req, res) => {
 };
 
 const getTodaySum = async (req, res) => {
-  const { page } = req.query;
 
   try {
     const { sum } = await sumDay();
     const { count } = await countDay();
-    const result3 = await selectDay(page ? page : 1);
+    const result3 = await selectDay();
 
     res.status(200).json({ sum, count, result: result3 });
   } catch (e) {

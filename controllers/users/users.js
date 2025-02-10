@@ -7,8 +7,17 @@ const {
   createUser,
   updateModel,
   deleteUser,
+  countAllUsers,
 } = require("./model");
 
+const countUsers = async (req, res) => {
+  try {
+    const result = await countAllUsers();
+    res.status(200).json(result);
+  } catch (e) {
+    res.status(400).json({ message: "Error from count ", error: e.message });
+  }
+};
 const getAllUsers = async (req, res) => {
   const { page } = req.query;
   if (!page)
@@ -211,4 +220,5 @@ module.exports = {
   addUser,
   updateUser,
   deleteUserByID,
+  countUsers,
 };

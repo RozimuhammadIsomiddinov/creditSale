@@ -5,6 +5,7 @@ const {
   addUser,
   updateUser,
   deleteUserByID,
+  countUsers,
 } = require("../controllers/users/users");
 const router = express.Router();
 
@@ -177,11 +178,10 @@ const router = express.Router();
  *       - passport_series
  */
 
-router
-  .get("/", getAllUsers)
-  .get("/:id", getByIdUser)
-  .post("/add", addUser)
-  .put("/update/:id", updateUser)
-  .delete("/delete/:id", deleteUserByID);
-
+router.get("/", getAllUsers);
+router.get("/:id", getByIdUser);
+router.post("/add", addUser);
+router.put("/update/:id", updateUser);
+router.delete("/delete/:id", deleteUserByID);
+router.get("/count", countUsers);
 module.exports = router;
