@@ -18,6 +18,7 @@ const getByZone = async (req, res) => {
       telefon_raqami_2: user.phone_number2,
       ishlash_joyi: user.workplace,
       tolagan_summasi: user.payment,
+      qancha_qolgan: user.cost - user.payment,
       berilgan_vaqti: user.given_day,
     }));
 
@@ -31,6 +32,7 @@ const getByZone = async (req, res) => {
       { wch: 18 }, // Telefon_raqami_1 (18 belgilik kenglik)
       { wch: 18 }, // Telefon_raqami_2 (18 belgilik kenglik)
       { wch: 20 }, // Ishlash_joyi (20 belgilik kenglik)
+      { wch: 20 },
       { wch: 15 }, // Tolagan_summasi (15 belgilik kenglik)
       { wch: 15 }, // Berilgan_vaqti (15 belgilik kenglik)
     ];
