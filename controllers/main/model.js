@@ -23,7 +23,28 @@ const payedUsersCountQuery = `
 //2.
 //bu oy to'lamaganlar  yani qancha to'lanishi kerak
 const selectNotPayedUsersQuery = `
-    SELECT * FROM users WHERE payment_status = false LIMIT $1 OFFSET $2;
+    SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat
+  FROM users
+  JOIN zone ON users.zone = zone.id
+  JOIN workplace ON users.workplace = workplace.id
+   WHERE payment_status = false LIMIT $1 OFFSET $2;
 `;
 
 //bu oy to'lamagan userlar soni
@@ -46,9 +67,30 @@ const countMonthQuery = `
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
-    SELECT user_id 
-    FROM payment AS p
-    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
+  SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat
+FROM users
+JOIN zone ON users.zone = zone.id
+JOIN workplace ON users.workplace = workplace.id
+JOIN payment p ON users.id = p.user_id  -- payment jadvali bilan ulanish
+WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
+
 `;
 //4.
 // bugun to'laganlar
@@ -65,8 +107,28 @@ const countDayQuery = `
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
 const selectDayQuery = `
- SELECT user_id 
-  FROM payment AS p
+SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat
+FROM users
+JOIN zone ON users.zone = zone.id
+JOIN workplace ON users.workplace = workplace.id
+JOIN payment p ON users.id = p.user_id  -- payment jadvali bilan ulanish
     WHERE DATE(p.payment_date) = CURRENT_DATE;
     `;
 //1.
