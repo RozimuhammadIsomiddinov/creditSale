@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 /**
  * @swagger
- * /zones:
+ * /zone:
  *   get:
  *     summary: Get all zones
  *     tags:
@@ -37,7 +37,7 @@ const router = express.Router();
  *       400:
  *         description: Error retrieving zones
  *
- * /zones/{id}:
+ * /zone/{id}:
  *   get:
  *     summary: Get zone by ID
  *     tags:
@@ -68,7 +68,7 @@ const router = express.Router();
  *       404:
  *         description: Zone not found
  *
- * /zones/add:
+ * /zone/add:
  *   post:
  *     summary: Add a new zone
  *     tags:
@@ -92,7 +92,7 @@ const router = express.Router();
  *       400:
  *         description: Missing required fields or invalid data
  *
- * /zones/update/{id}:
+ * /zone/update/{id}:
  *   put:
  *     summary: Update zone by ID
  *     tags:
@@ -123,7 +123,7 @@ const router = express.Router();
  *       404:
  *         description: Zone not found
  *
- * /zones/filter:
+ * /zone/filter:
  *   post:
  *     summary: Filter users by zone
  *     description: Retrieve a paginated list of users belonging to a specific zone.
