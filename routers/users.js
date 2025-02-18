@@ -145,21 +145,17 @@ const router = express.Router();
  *         type: string
  *       cost:
  *         type: number
- *         format: float
  *       phone_number:
  *         type: string
  *       phone_number2:
  *         type: string
- *       workplace:
+ *       workplace_id:
  *         type: string
  *       time:
- *         type: string
- *         format: float
- *       zone:
+ *         type: number
+ *       zone_id:
  *         type: string
  *       seller:
- *         type: string
- *       collector:
  *         type: string
  *       passport_series:
  *         type: string
@@ -173,11 +169,10 @@ const router = express.Router();
  *       - product_name
  *       - cost
  *       - phone_number
- *       - zone
+ *       - zone_id
  *       - seller
- *       - workplace
+ *       - workplace_id
  *       - time
- *       - collector
  *       - passport_series
  */
 
