@@ -35,12 +35,10 @@ const addPaymentAmount = async (req, res) => {
   if (!id) return res.status(400).json({ message: "please send user's id" });
 
   const res1 = await getById(id);
-
-  if (res1.length == 0)
-    return res.status(404).json({ message: "user has not" });
+  if (!res1) return res.status(404).json({ message: "user has not" });
 
   const res2 = await getByIdCollector(collector_id);
-  if (res2.length == 0)
+  if (!res2)
     return res.status(404).json({
       message: "collector has not",
     });

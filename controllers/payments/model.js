@@ -7,7 +7,7 @@ const paymentHistoryQuery = `
 
 //boshqa oy uchun bo'lsa
 const insertPaymentOld = `
-    INSERT INTO payment (
+     INSERT INTO payment (
     user_id,
     collector_id,
     zone_id,
@@ -17,7 +17,7 @@ const insertPaymentOld = `
     description
     )
     VALUES(
-    $1,$2,$3,$4,$5,$6,$7,$8
+    $1,$2,$3,$4,$5,$6,$7
     )
     RETURNING *;
 `;
@@ -27,17 +27,15 @@ const insertPaymentOld = `
 const updateUserPaymentQuery = `
     UPDATE users
     SET payment = payment + $1,
-        payment_status = true,
-        collector = $2
-    WHERE id = $3
+        payment_status = true
+    WHERE id = $2
     RETURNING *;
 `;
 //agar boshqa oy uchun bo'lsa
 const updateUserPaymentOld = `
     UPDATE  users
-    SET payment = payment + $1,
-        collector = $2
-    WHERE id = $3
+    SET payment = payment + $1
+    WHERE id = $2
     RETURNING *;
 `;
 
@@ -80,13 +78,11 @@ const addPayment = async (
     if (type == false) {
       var updatedUser = await client.query(updateUserPaymentQuery, [
         paymentAmount,
-        collector_id,
         user_id,
       ]);
     }
     updatedUser = await client.query(updateUserPaymentOld, [
       paymentAmount,
-      collector_id,
       user_id,
     ]);
     //har kuni soat 00:00 da tekshirib, 30 kun o'tgan user_id lar uchun payment_status ni false qilib qo'yadi
@@ -136,7 +132,6 @@ const updatePaymentHistory = async (id, newAmount, newMonth) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
     const oldPaymentRes = await client.query(
       "SELECT user_id, payment_amount FROM payment WHERE id = $1",
       [id]
