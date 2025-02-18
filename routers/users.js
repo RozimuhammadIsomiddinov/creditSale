@@ -7,6 +7,9 @@ const {
   deleteUserByID,
   countUsers,
 } = require("../controllers/users/users");
+const {
+  filterByZoneAndWorkplace,
+} = require("../controllers/collector/page/filter");
 const router = express.Router();
 
 /**
@@ -178,10 +181,51 @@ const router = express.Router();
  *       - passport_series
  */
 
+/**
+ * @swagger
+ * /users/filter:
+ *   post:
+ *     summary: Filter users by zone, workplace, and payment status
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               zone_id:
+ *                 type: integer
+ *                 example: 1
+ *               workplace_id:
+ *                 type: integer
+ *                 example: 10
+ *               payment_status:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Successfully filtered users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/definitions/User'
+ *       400:
+ *         description: Missing fields or invalid format
+ *       404:
+ *         description: Zone or workplace not found
+ */
+
 router.get("/", getAllUsers);
 router.get("/count", countUsers);
 router.get("/:id", getByIdUser);
 router.post("/add", addUser);
+
+router.post("/filter", filterByZoneAndWorkplace);
+
 router.put("/update/:id", updateUser);
 router.delete("/delete/:id", deleteUserByID);
 module.exports = router;

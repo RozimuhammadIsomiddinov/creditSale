@@ -21,18 +21,124 @@ const insertInto = `
     RETURNING*;
 
 `;
+
 const collectByCollectorQuery = `
       SELECT 
         c.collector_name, 
         DATE_TRUNC('month', p.payment_date) AS month,
         SUM(p.payment_amount) AS total_collected
-    FROM payments p
+    FROM payment p
     JOIN collector c ON p.collector = c.collector_name
     WHERE p.payment_date >= DATE_TRUNC('month', NOW())
     GROUP BY c.collector_name, month
     ORDER BY month DESC, total_collected DESC;
+`;
+
+const thisMonthCollect = `
+    SELECT
+    zone.zone_name AS zon_name,
+    collector.login,
+    SUM(payment.payment_amount) AS total_payment
+FROM
+    payment
+JOIN
+    collector ON payment.collector_id = collector.id
+JOIN
+    zone ON payment.zone_id = zone.id  -- zone jadvalini qo'shish
+WHERE
+    payment.payment_date >= date_trunc('month', CURRENT_DATE)  -- Joriy oyning boshidan
+    AND payment.payment_date < date_trunc('month', CURRENT_DATE + INTERVAL '1 month')  -- Kelgusi oydan oldin
+    AND collector.id = $1
+GROUP BY
+    zone.zone_name, collector.login
+ORDER BY
+    total_payment DESC;
+`;
+
+const oldMOnthCollect = `
+  SELECT
+    zone.zone_name AS zon_name,
+    collector.login,
+    SUM(payment.payment_amount) AS total_payment
+FROM
+    payment
+JOIN
+    collector ON payment.collector_id = collector.id
+JOIN
+    zone ON payment.zone_id = zone.id  -- zone jadvalini qo'shish
+WHERE
+    payment.payment_date >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')  -- O'tgan oyning boshlanishi
+    AND payment.payment_date < date_trunc('month', CURRENT_DATE)  -- Joriy oyning boshlanishi
+    AND collector.id = $1
+GROUP BY
+    zone.zone_name, collector.id, collector.login  -- zone_name ham GROUP BY ga qo'shildi
+ORDER BY
+    total_payment DESC;
 
 `;
+const allCountByCollector = `
+    SELECT COUNT(*) FROM payment WHERE id = $1;
+`;
+const thisMonthCount = `
+    SELECT
+        zone.zone_name AS zon_name,
+        collector.login,
+        COUNT(payment.id) AS total_count  -- to'lovlar sonini hisoblash
+    FROM
+        payment
+    JOIN
+        collector ON payment.collector_id = collector.id
+    JOIN
+        zone ON payment.zone_id = zone.id  -- zone jadvalini qo'shish
+    WHERE
+        payment.payment_date >= date_trunc('month', CURRENT_DATE)  -- Joriy oyning boshidan
+        AND payment.payment_date < date_trunc('month', CURRENT_DATE + INTERVAL '1 month')  -- Kelgusi oydan oldin
+        AND collector.id = $1
+    GROUP BY
+        zone.zone_name, collector.login
+    ORDER BY
+        total_count DESC;
+
+`;
+
+const oldMonthCount = `
+SELECT
+    zone.zone_name AS zon_name,
+    collector.login,
+    COUNT(payment.id) AS total_count  -- payment.id ni hisoblash, to'lovlar soni
+FROM
+    payment
+JOIN
+    collector ON payment.collector_id = collector.id
+JOIN
+    zone ON payment.zone_id = zone.id  -- zone jadvalini qo'shish
+WHERE
+    payment.payment_date >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')  -- O'tgan oyning boshlanishi
+    AND payment.payment_date < date_trunc('month', CURRENT_DATE)  -- Joriy oyning boshlanishi
+    AND collector.id = $1
+GROUP BY
+    zone.zone_name, collector.id, collector.login  -- zone_name ham GROUP BY ga qo'shildi
+ORDER BY
+    total_count DESC;
+
+`;
+const getThisMonthByID = async (id) => {
+  try {
+    const { rowCount, rows } = await pool.query(thisMonthCollect, [id]);
+    return { rowCount, rows };
+  } catch (e) {
+    console.error("Error executing query in getThisMonth", e.message);
+  }
+};
+
+const getOldMonthByID = async (id) => {
+  try {
+    const { rowCount, rows } = await pool.query(oldMOnthCollect, [id]);
+    return { rowCount, rows };
+  } catch (e) {
+    console.error("Error executing query in getOldMonth", e.message);
+  }
+};
 const getAll = async () => {
   try {
     const res = await pool.query(selectQuery);
@@ -101,6 +207,8 @@ const createCollector = async () => {
 createCollector();
 module.exports = {
   getAll,
+  getOldMonthByID,
+  getThisMonthByID,
   getByIdCollector,
   getByNameCollector,
   collectByCollector,

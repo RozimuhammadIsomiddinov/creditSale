@@ -35,38 +35,38 @@ const notPayedUsersQuery = `
 //bu oy qancha to'laganlar
 const sumMonthQuery = `
     SELECT SUM(payment_amount) 
-    FROM payments AS p
+    FROM payment AS p
     WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
 `;
 
 const countMonthQuery = `
   SELECT COUNT(*) 
-    FROM payments AS p
+    FROM payment AS p
     WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
     SELECT user_id 
-    FROM payments AS p
+    FROM payment AS p
     WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
 `;
 //4.
 // bugun to'laganlar
 const sumDayQuery = `
     SELECT SUM(payment_amount) 
-    FROM payments AS p
+    FROM payment AS p
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
 
 //bugun pul nechi marta to'langan soni
 const countDayQuery = `
   SELECT COUNT(*) 
-    FROM payments AS p
+    FROM payment AS p
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
 const selectDayQuery = `
  SELECT user_id 
-  FROM payments AS p
+  FROM payment AS p
     WHERE DATE(p.payment_date) = CURRENT_DATE;
     `;
 //1.

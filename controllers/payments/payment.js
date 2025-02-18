@@ -1,6 +1,6 @@
 const { getByIdCollector } = require("../collector/model");
 const { getById } = require("../users/model");
-const { addPayment, paymentHistory } = require("./model");
+const { addPayment, paymentHistory, updatePaymentHistory } = require("./model");
 
 const getPaymentHistory = async (req, res) => {
   const { id } = req.params;

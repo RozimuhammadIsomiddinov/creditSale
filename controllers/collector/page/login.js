@@ -19,6 +19,7 @@ const loginCollector = async (req, res) => {
     res.status(200).json({
       token,
       collector_name: result1[0].login,
+      id: result1[0].id,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });

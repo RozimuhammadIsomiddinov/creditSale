@@ -47,9 +47,8 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
-app.use("/workplace", routerWorkplace);
-
 app.use("/admin", routerAdmin);
+app.use("/workplace", routerWorkplace);
 app.use("/users", routerUsers);
 app.use("/payment", routerPayment);
 app.use("/zone", routerZone);

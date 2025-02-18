@@ -173,11 +173,43 @@ const router = express.Router();
  *         description: No users found in the specified zone.
  */
 
+/**
+ * @swagger
+ * /zone/about:
+ *   get:
+ *     summary: Get zone statistics (payments and users)
+ *     tags:
+ *       - Zones
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved zone statistics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 zonedagi_tolaganlar:
+ *                   type: integer
+ *                   description: The total amount of payments in the zone
+ *                 bu_oy_tolagan:
+ *                   type: integer
+ *                   description: The total amount paid this month in the zone
+ *                 hamma_users:
+ *                   type: integer
+ *                   description: The total number of users in the zone
+ *                 tolamagan_users:
+ *                   type: integer
+ *                   description: The total number of users who haven't paid in the zone
+ *       400:
+ *         description: Error retrieving zone statistics
+ *       500:
+ *         description: Internal server error
+ */
+
 router.get("/", getAllZone);
-router.get("/about", selectByZone);
+router.get("/about", selectByZone); //swagger kerak
 
 router.get("/:id", getByIdZone);
-
 router.post("/add", addZone);
 router.put("/update/:id", updateZone);
 module.exports = router;

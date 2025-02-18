@@ -2,12 +2,15 @@ const express = require("express");
 const { loginMid } = require("../controllers/admin/login");
 
 const router = express.Router();
+
 /**
  * @swagger
  * /admin/login:
  *   post:
  *     summary: Admin login
  *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -38,6 +41,16 @@ const router = express.Router();
  *         description: Admin topilmadi
  *       500:
  *         description: Server xatosi
+ */
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 router.post("/login", loginMid);

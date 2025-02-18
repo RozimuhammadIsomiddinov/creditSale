@@ -2,7 +2,6 @@ const express = require("express");
 const {
   getAllCollector,
   getByIdCollector,
-  updateCollector,
   getCollectorMoney,
 } = require("../controllers/collector/collector");
 const { loginCollector } = require("../controllers/collector/page/login.js");
@@ -11,6 +10,9 @@ const {
   filterByZoneBoolean,
   filterByZoneAndWorkplace,
 } = require("../controllers/collector/page/filter.js");
+const {
+  selectThisOldMonthByID,
+} = require("../controllers/collector/page/statistic.js");
 
 const router = express.Router();
 
@@ -146,6 +148,78 @@ const router = express.Router();
  *       404:
  *         description: Collector not found
  */
+
+/**
+ * @swagger
+ * /collector/statistic/{id}:
+ *   get:
+ *     summary: Get statistics for the selected collector for this and last month
+ *     tags: [Collectors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the collector
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved statistics for this and last month
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 this_month:
+ *                   type: object
+ *                   properties:
+ *                     rowCount:
+ *                       type: integer
+ *                       example: 2
+ *                     rows:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           zone_name:
+ *                             type: string
+ *                             example: "Zon 1"
+ *                           login:
+ *                             type: string
+ *                             example: "collector123"
+ *                           total_payment:
+ *                             type: number
+ *                             format: float
+ *                             example: 1500.00
+ *                 old_month:
+ *                   type: object
+ *                   properties:
+ *                     rowCount:
+ *                       type: integer
+ *                       example: 3
+ *                     rows:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           zone_name:
+ *                             type: string
+ *                             example: "Zon 1"
+ *                           login:
+ *                             type: string
+ *                             example: "collector123"
+ *                           total_payment:
+ *                             type: number
+ *                             format: float
+ *                             example: 1200.00
+ *       400:
+ *         description: Bad request, missing collector ID
+ *       404:
+ *         description: Collector not found
+ */
+
+router.get("/statistic/:id", selectThisOldMonthByID);
 
 router.post("/login", loginCollector);
 router.post("/filter", filterByZoneBoolean);
