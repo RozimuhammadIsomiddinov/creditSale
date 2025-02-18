@@ -5,6 +5,7 @@ const {
   addZone,
   updateZone,
   filterZoneUsers,
+  selectByZone,
 } = require("../controllers/zone/zone");
 
 const router = express.Router();
@@ -172,10 +173,11 @@ const router = express.Router();
  *         description: No users found in the specified zone.
  */
 
-router
-  .get("/", getAllZone)
-  .get("/:id", getByIdZone)
-  .post("/add", addZone)
-  .put("/update/:id", updateZone);
-router.post("/filter", filterZoneUsers);
+router.get("/", getAllZone);
+router.get("/about", selectByZone);
+
+router.get("/:id", getByIdZone);
+
+router.post("/add", addZone);
+router.put("/update/:id", updateZone);
 module.exports = router;

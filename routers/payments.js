@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getPaymentHistory,
   addPaymentAmount,
+  updatePaymentAmount,
 } = require("../controllers/payments/payment");
 
 const router = express.Router();
@@ -76,7 +77,44 @@ const router = express.Router();
  *         description: User or collector not found
  */
 
+/**
+ * @swagger
+ * /payment/update/{id}:
+ *   put:
+ *     summary: Update a payment amount
+ *     tags:
+ *       - Payments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Payment ID to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 example: 150
+ *               payment_month:
+ *                 type: string
+ *                 example: "February"
+ *     responses:
+ *       200:
+ *         description: Payment updated successfully
+ *       400:
+ *         description: Invalid input data or missing payment ID
+ *       404:
+ *         description: Payment not found or update failed
+ */
+
 router.get("/history/:id", getPaymentHistory);
 router.post("/add/:id", addPaymentAmount);
+router.put("/update/:id", updatePaymentAmount);
 
 module.exports = router;

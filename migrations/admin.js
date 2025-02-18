@@ -3,7 +3,7 @@ const pool = require("../config/dbconfig");
 const createAdminTable = async () => {
   const query = `
       CREATE TABLE IF NOT EXISTS admin(
-      id SERIAL ,
+      id SERIAL PRIMARY KEY,
       name VARCHAR(50) NOT NULL,
       password VARCHAR(255) NOT NULL,
       createdat TIMESTAMP DEFAULT NOW()

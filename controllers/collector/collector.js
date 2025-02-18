@@ -1,10 +1,4 @@
-const {
-  getAll,
-  getById,
-  createCollector,
-  updatedCollector,
-  collectByCollector,
-} = require("./model");
+const { getAll, collectByCollector } = require("./model");
 
 const getAllCollector = async (req, res) => {
   try {
@@ -55,7 +49,7 @@ const addCollector = async (req, res) => {
       .json({ message: "Error from addCollector", error: e.message });
   }
 };
-
+/*
 const updateCollector = async (req, res) => {
   const { id } = req.params;
   if (!id) return res.status(400).json({ message: "please send user's id" });
@@ -79,7 +73,7 @@ const updateCollector = async (req, res) => {
       .json({ message: "Error from updateCollector", error: e.message });
   }
 };
-
+*/
 const getCollectorMoney = async (req, res) => {
   try {
     const result = await collectByCollector();
@@ -94,6 +88,6 @@ module.exports = {
   getAllCollector,
   getByIdCollector,
   addCollector,
-  updateCollector,
+
   getCollectorMoney,
 };

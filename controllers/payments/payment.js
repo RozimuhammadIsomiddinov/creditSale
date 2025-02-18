@@ -1,4 +1,4 @@
-const { getByNameCollector } = require("../collector/model");
+const { getByIdCollector } = require("../collector/model");
 const { getById } = require("../users/model");
 const { addPayment, paymentHistory } = require("./model");
 
@@ -22,7 +22,15 @@ const getPaymentHistory = async (req, res) => {
 const addPaymentAmount = async (req, res) => {
   const { id } = req.params;
 
-  const { amount, collector, payment_month, description } = req.body;
+  const {
+    amount,
+    collector_id,
+    zone_id,
+    payment_month,
+    payment_date,
+    type,
+    description,
+  } = req.body;
 
   if (!id) return res.status(400).json({ message: "please send user's id" });
 
@@ -31,10 +39,10 @@ const addPaymentAmount = async (req, res) => {
   if (res1.length == 0)
     return res.status(404).json({ message: "user has not" });
 
-  const res2 = await getByNameCollector(collector);
+  const res2 = await getByIdCollector(collector_id);
   if (res2.length == 0)
     return res.status(404).json({
-      message: "collector name has not\n please enter true collector name",
+      message: "collector has not",
     });
   const amountNumber = parseFloat(amount);
   if (isNaN(amountNumber)) {
@@ -43,19 +51,20 @@ const addPaymentAmount = async (req, res) => {
   try {
     const result = await addPayment(
       id,
-      collector,
+      collector_id,
+      zone_id,
       payment_month,
       amountNumber,
-      description
+      payment_date,
+      description,
+      type
     );
-    // Foydalanuvchi yoki to‘lov topilmagan bo‘lsa
     if (!result || !result.updatedUser) {
       return res
         .status(404)
         .json({ message: "User not found or update failed" });
     }
 
-    // Muvaffaqiyatli holatda javob qaytarish
     return res.status(201).json({
       message: "Payment added successfully",
       payment: result.payment,
@@ -67,4 +76,39 @@ const addPaymentAmount = async (req, res) => {
       .json({ message: "Error while adding payment", error: e.message });
   }
 };
-module.exports = { addPaymentAmount, getPaymentHistory };
+const updatePaymentAmount = async (req, res) => {
+  const { id } = req.params;
+  const { amount, payment_month } = req.body;
+
+  if (!id) return res.status(400).json({ message: "please send payment id" });
+
+  const newAmount = parseFloat(amount);
+  if (isNaN(newAmount)) {
+    return res.status(400).json({ message: "Please send a valid amount" });
+  }
+
+  try {
+    const updatedPayment = await updatePaymentHistory(
+      id,
+      newAmount,
+      payment_month
+    );
+
+    if (!updatedPayment) {
+      return res
+        .status(404)
+        .json({ message: "Payment not found or update failed" });
+    }
+
+    res.status(200).json({
+      message: "Payment updated successfully",
+      payment: updatedPayment,
+    });
+  } catch (e) {
+    res
+      .status(400)
+      .json({ message: "Error while updating payment", error: e.message });
+  }
+};
+
+module.exports = { addPaymentAmount, getPaymentHistory, updatePaymentAmount };

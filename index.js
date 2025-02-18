@@ -2,12 +2,15 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const routerWorkplace = require("./routers/workplace");
+
 const routerUsers = require("./routers/users");
 const routerPayment = require("./routers/payments");
 const routerZone = require("./routers/zones");
 const routerCollector = require("./routers/collector");
 const routerMain = require("./routers/main");
 const routerAdmin = require("./routers/admin");
+
 const { getByZone } = require("./controllers/sender/sender");
 
 const app = express();
@@ -23,6 +26,7 @@ app.use(
 );
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const { auth } = require("./middleware/auth");
 
 const options = {
   definition: {
@@ -43,10 +47,12 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
+app.use("/workplace", routerWorkplace);
+
 app.use("/admin", routerAdmin);
 app.use("/users", routerUsers);
 app.use("/payment", routerPayment);
-app.use("/zones", routerZone);
+app.use("/zone", routerZone);
 app.use("/collector", routerCollector);
 app.use("/main", routerMain);
 app.get("/excel-download", getByZone);

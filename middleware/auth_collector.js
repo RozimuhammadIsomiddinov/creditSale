@@ -1,8 +1,7 @@
 const JWT = require("../lib/jwt");
-const { getById } = require("../controllers/users/model");
-const { getByIdCollector } = require("../controllers/collector/model");
+const { getById } = require("../controllers/collector/model");
 
-const auth = async (req, res, next) => {
+const auth_collector = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // Bearer token
   if (!token) {
     return res.status(401).json({ error: "Please send a token" });
@@ -14,14 +13,9 @@ const auth = async (req, res, next) => {
       return res.status(401).json({ error: "Invalid token" });
     }
 
-    let admin = await getById(decoded.id);
-
+    const admin = await getById(decoded.id);
     if (!admin) {
-      admin = await getByIdCollector(decoded.id);
-    }
-
-    if (!admin) {
-      return res.status(401).json({ error: "User not found" });
+      return res.status(401).json({ error: "Admin not found" });
     }
 
     next();
@@ -30,4 +24,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = { auth };
+module.exports = { auth_collector };

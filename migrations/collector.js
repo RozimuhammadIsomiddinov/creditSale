@@ -3,9 +3,9 @@ const pool = require("../config/dbconfig");
 const createCollectorTable = async () => {
   const query = `
       CREATE TABLE IF NOT EXISTS collector(
-      id SERIAL ,
-      collector_name VARCHAR(200) UNIQUE NOT NULL PRIMARY KEY,
-      description VARCHAR(500),
+      id SERIAL PRIMARY KEY ,
+      login VARCHAR(200),
+      password VARCHAR(255),
       createdat TIMESTAMP DEFAULT NOW()
       )
       `;

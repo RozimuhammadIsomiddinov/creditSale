@@ -3,27 +3,31 @@ const { createPaymentsTable, dropPaymentsTable } = require("./payments_table");
 const { createZoneTable, dropZoneTable } = require("./zone_table");
 const { createCollectorTable, dropCollectorTable } = require("./collector");
 const { createAdminTable, dropAdminTable } = require("./admin");
+const {
+  createWorkPlaceTable,
+  dropWorkPlaceTable,
+} = require("./workplace_table");
 
-// Migrationni bajarish funksiyasi
 const runMigration = async () => {
   console.log("Running migrations...");
+  await createWorkPlaceTable();
   await createZoneTable();
+  await createAdminTable();
   await createCollectorTable();
   await createUsersTable();
   await createPaymentsTable();
-  await createAdminTable();
 
   console.log("Migrations completed.");
 };
 
-// Migrationni bekor qilish funksiyasi
 const rollbackMigration = async () => {
   console.log("Rolling back migrations...");
+  await dropAdminTable();
+  await dropCollectorTable();
   await dropPaymentsTable();
   await dropUsersTable();
   await dropZoneTable();
-  await dropCollectorTable();
-  await dropAdminTable();
+  await dropWorkPlaceTable();
 
   console.log("Rollback completed.");
 };

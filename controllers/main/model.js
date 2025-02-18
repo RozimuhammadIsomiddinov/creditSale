@@ -21,14 +21,14 @@ const payedUsersCountQuery = `
 `;
 
 //2.
-//to'lamaganlar  yani qancha to'lanishi kerak
+//bu oy to'lamaganlar  yani qancha to'lanishi kerak
 const selectNotPayedUsersQuery = `
-    SELECT * FROM users WHERE payment = 0 LIMIT $1 OFFSET $2;
+    SELECT * FROM users WHERE payment_status = false LIMIT $1 OFFSET $2;
 `;
 
-//to'lamagan userlar soni
+//bu oy to'lamagan userlar soni
 const notPayedUsersQuery = `
-    SELECT COUNT(*) FROM users WHERE payment = 0;
+    SELECT COUNT(*) FROM users WHERE payment_status = false;
 `;
 
 //3.

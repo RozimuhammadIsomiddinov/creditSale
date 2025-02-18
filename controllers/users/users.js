@@ -1,6 +1,7 @@
 const { logger } = require("../../logs/log");
-const { getByNameCollector } = require("../collector/model");
-const { getByName } = require("../zone/model");
+const { getByNameCollector, getByIdCollector } = require("../collector/model");
+const { getByIdWorkplace } = require("../workplace/model");
+const { getByName, getByIdZones } = require("../zone/model");
 const {
   getAll,
   getById,
@@ -15,37 +16,44 @@ const countUsers = async (req, res) => {
     const result = await countAllUsers();
     res.status(200).json(result);
   } catch (e) {
-    res.status(400).json({ message: "Error from count ", error: e.message });
+    res
+      .status(500)
+      .json({ message: "Error from countUsers", error: e.message });
   }
 };
+
 const getAllUsers = async (req, res) => {
   const { page } = req.query;
-  if (!page)
-    return res.status(400).json({ message: "please send page number" });
+  if (!page) {
+    return res.status(400).json({ message: "Please send a page number" });
+  }
   try {
     const result = await getAll(page);
-    if (result.length == 0) {
-      return res.status(404).json({ message: "users have not yet!" });
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No users found!" });
     }
     res.status(200).json(result);
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getAllUsers", error: e.message });
   }
 };
 
 const getByIdUser = async (req, res) => {
   const { id } = req.params;
-  if (!id) return res.status(400).json({ message: "please send user's id" });
+  if (!id) {
+    return res.status(400).json({ message: "Please provide a user ID" });
+  }
   try {
     const result = await getById(id);
-    if (result.length == 0)
-      return res.status(404).json({ message: "user has not" });
-    res.status(200).json(result[0]);
+    if (!result) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(result);
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getByIdUser", error: e.message });
   }
 };
@@ -57,11 +65,10 @@ const addUser = async (req, res) => {
     cost,
     phone_number,
     phone_number2,
-    workplace,
+    workplace_id,
     time,
-    zone,
+    zone_id,
     seller,
-    collector,
     passport_series,
     description,
     given_day,
@@ -72,11 +79,10 @@ const addUser = async (req, res) => {
     !product_name ||
     !cost ||
     !phone_number ||
-    !zone ||
+    !zone_id ||
     !seller ||
-    !workplace ||
+    !workplace_id ||
     !time ||
-    !collector ||
     !passport_series
   ) {
     return res
@@ -84,42 +90,40 @@ const addUser = async (req, res) => {
       .json({ message: "Please provide all required fields." });
   }
 
-  const res1 = await getByName(zone);
-  const res2 = await getByNameCollector(collector);
-
-  if (res1.length == 0 || res2.length == 0)
-    return res.status(404).json({
-      message:
-        "Zone or collector name has not\n please enter true zone or collector name",
-    });
   try {
+    const zoneData = await getByIdZones(zone_id);
+    const workplaceData = await getByIdWorkplace(workplace_id);
+    if (!zoneData.length || !workplaceData) {
+      return res
+        .status(404)
+        .json({ message: "Invalid zone  or workplace name" });
+    }
+
     const newUser = await createUser({
       name,
       product_name,
       cost,
       phone_number,
       phone_number2,
-      workplace,
+      workplace_id,
       time,
-      zone,
+      zone_id,
       seller,
-      collector,
       passport_series,
       description,
       given_day: given_day || new Date(),
     });
 
     if (!newUser) {
-      return res.status(400).json({ message: "User was not created." });
+      return res.status(500).json({ message: "User creation failed" });
     }
-    logger.info(newUser);
 
-    return res.status(201).json({
-      message: "User added successfully!",
-      user: newUser ? newUser : "user doesn't saved",
-    });
+    logger.info("New user added:", newUser);
+    res
+      .status(201)
+      .json({ message: "User added successfully!", user: newUser });
   } catch (e) {
-    res.status(400).json({ message: "Error from addUser", error: e.message });
+    res.status(500).json({ message: "Error from addUser", error: e.message });
   }
 };
 
@@ -131,11 +135,10 @@ const updateUser = async (req, res) => {
     cost,
     phone_number,
     phone_number2,
-    workplace,
+    workplace_id,
     time,
-    zone,
+    zone_id,
     seller,
-    collector,
     passport_series,
     description,
     given_day,
@@ -147,73 +150,80 @@ const updateUser = async (req, res) => {
     !cost ||
     !phone_number ||
     !seller ||
-    !zone ||
-    !workplace ||
+    !zone_id ||
+    !workplace_id ||
     !time ||
-    !collector ||
     !passport_series
   ) {
     return res
       .status(400)
       .json({ message: "Please provide all required fields." });
   }
-  const res1 = await getByName(zone);
-  const res2 = await getByNameCollector(collector);
 
-  if (res1.length == 0 || res2.length == 0)
-    return res.status(404).json({
-      message:
-        "Zone or collector name has not\n please enter true zone or collector name",
-    });
   try {
-    const result = await updateModel(id, {
+    const zoneData = await getByIdZones(zone_id);
+    const workplaceData = await getByIdWorkplace(workplace_id);
+    if (!zoneData.length || !workplaceData) {
+      return res
+        .status(404)
+        .json({ message: "Invalid zone or workplace name" });
+    }
+
+    const updatedUser = await updateModel(id, {
       name,
       product_name,
       cost,
       phone_number,
       phone_number2,
-      workplace,
+      workplace_id,
       time,
-      zone,
+      zone_id,
       seller,
-      collector,
       passport_series,
       description,
       given_day: given_day || new Date(),
     });
-    logger.info(result);
-    return res.status(201).json({
-      message: "User updated successfully!",
-      result,
-    });
+
+    if (!updatedUser) {
+      return res.status(500).json({ message: "User update failed" });
+    }
+
+    logger.info("User updated:", updatedUser);
+    res
+      .status(200)
+      .json({ message: "User updated successfully!", user: updatedUser });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from updateUser", error: e.message });
   }
 };
 
 const deleteUserByID = async (req, res) => {
   const { id } = req.params;
-  if (!id) return res.status(400).json({ message: "please send user's id" });
+  if (!id) {
+    return res.status(400).json({ message: "Please provide a user ID" });
+  }
   try {
-    const result1 = await getById(id);
+    const userExists = await getById(id);
 
-    if (result1.length == 0)
-      return res.status(404).json({ message: "user has not" });
+    if (userExists.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    const result2 = await deleteUser(id);
-    console.log(result2);
-    if (result2 != 1)
-      return res.status(400).json({ message: "user not found" });
+    const deleteResult = await deleteUser(id);
+    if (deleteResult !== 1) {
+      return res.status(500).json({ message: "User deletion failed" });
+    }
 
-    res.status(200).json({ message: "user has succesfully deleted" });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from deleteUserByID", error: e.message });
   }
 };
+
 module.exports = {
   getAllUsers,
   getByIdUser,

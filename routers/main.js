@@ -140,10 +140,9 @@ const router = express.Router();
  *                         example: 200
  */
 
-router
-  .get("/all", getAllMoney)
-  .get("/notPayed", getNotPayedUsers)
-  .get("/month", getMonthSum)
-  .get("/today", getTodaySum);
+router.get("/all", getAllMoney);
+router.get("/notPayed", getNotPayedUsers);
+router.get("/month", getMonthSum);
+router.get("/today", getTodaySum);
 
 module.exports = router;

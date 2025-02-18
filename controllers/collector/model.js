@@ -1,4 +1,5 @@
 const pool = require("../../config/dbconfig");
+const bcrypt = require("bcryptjs");
 
 const selectQuery = `
     SELECT *FROM collector;
@@ -8,37 +9,29 @@ const selectByIdQuery = `
     SELECT *FROM collector WHERE id = $1;
 `;
 const selectByName = `
-SELECT *FROM collector WHERE collector_name ILIKE $1;
+    SELECT * FROM collector WHERE login = $1;
 `;
 
 const insertInto = `
-    INSERT INTO collector (
-    collector_name,
-    description
+    INSERT INTO collector(
+    login,
+    password
     )
-    VALUES ($1,$2)
-    RETURNING *;
+    VALUES($1,$2)
+    RETURNING*;
 
 `;
-
-const updateQuery = `
-    UPDATE collector 
-        SET 
-            collector_name =$1,
-            description = $2
-        WHERE id =$3
-        RETURNING *;
-`;
-
 const collectByCollectorQuery = `
-    SELECT 
+      SELECT 
         c.collector_name, 
+        DATE_TRUNC('month', p.payment_date) AS month,
         SUM(p.payment_amount) AS total_collected
     FROM payments p
     JOIN collector c ON p.collector = c.collector_name
-    WHERE p.payment_date >= NOW() - INTERVAL '30 days'
-    GROUP BY c.collector_name
-    ORDER BY total_collected DESC;
+    WHERE p.payment_date >= DATE_TRUNC('month', NOW())
+    GROUP BY c.collector_name, month
+    ORDER BY month DESC, total_collected DESC;
+
 `;
 const getAll = async () => {
   try {
@@ -49,7 +42,7 @@ const getAll = async () => {
   }
 };
 
-const getById = async (id) => {
+const getByIdCollector = async (id) => {
   try {
     const res = await pool.query(selectByIdQuery, [id]);
     return res.rows;
@@ -58,39 +51,13 @@ const getById = async (id) => {
   }
 };
 
-const getByNameCollector = async (name) => {
-  if (!name || typeof name !== "string") {
-    throw new Error("Invalid collector name");
-  }
+const getByNameCollector = async (login) => {
   try {
-    const res = await pool.query(selectByName, [name]);
+    const res = await pool.query(selectByName, [login]);
     return res.rows;
   } catch (e) {
     console.error("Error executing query in getByNameCollector", e.message);
     throw e;
-  }
-};
-const createCollector = async (data) => {
-  const { collector_name, description } = data;
-  try {
-    const res = await pool.query(insertInto, [collector_name, description]);
-    return res.rows[0];
-  } catch (e) {
-    console.error("Error executing query in getcreatecollector", e.message);
-  }
-};
-
-const updatedCollector = async (data) => {
-  const { id, collector_name, description } = data;
-  try {
-    const res = await pool.query(updateQuery, [
-      collector_name,
-      description,
-      id,
-    ]);
-    return res.rows;
-  } catch (e) {
-    console.error("Error executing query in getupdatedCollector", e.message);
   }
 };
 
@@ -103,11 +70,38 @@ const collectByCollector = async () => {
   }
 };
 
+const createCollector = async () => {
+  const collectors = [
+    { login: "aziz", password: "aziz70" },
+    { login: "laziz", password: "laziz70" },
+    { login: "ahmad", password: "ahmad70" },
+  ];
+
+  try {
+    for (const collector of collectors) {
+      const { login, password } = collector;
+
+      const checkCollector = await pool.query(selectByName, [login]);
+
+      if (checkCollector.rows.length > 0) {
+        console.log(`Collector ${login} allaqachon mavjud.`);
+        continue;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await pool.query(insertInto, [login, hashedPassword]);
+
+      console.log(`collector ${login} yaratildi.`);
+    }
+  } catch (e) {
+    console.error("Xatolik createCollector: " + e.message);
+  }
+};
+
+createCollector();
 module.exports = {
   getAll,
-  getById,
+  getByIdCollector,
   getByNameCollector,
-  createCollector,
-  updatedCollector,
   collectByCollector,
 };

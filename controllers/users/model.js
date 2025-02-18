@@ -1,15 +1,52 @@
 const pool = require("../../config/dbconfig");
 
-const countAll = `
-    SELECT COUNT(*) FROM users;
-`;
-const selectAll = `
-    SELECT *FROM users LIMIT $1 OFFSET $2;
-`;
+const countAll = `SELECT COUNT(*) FROM users;`;
 
-const selectByIdQuery = `
-    SELECT *FROM users WHERE id=$1;
-`;
+const selectAll = `SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat
+FROM users
+JOIN zone ON users.zone = zone.id
+JOIN workplace ON users.workplace = workplace.id
+ LIMIT $1 OFFSET $2;`;
+
+const selectByIdQuery = `SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat
+  FROM users
+  JOIN zone ON users.zone = zone.id
+  JOIN workplace ON users.workplace = workplace.id
+   WHERE users.id = $1;`;
 
 const create = `
     INSERT INTO users (
@@ -18,17 +55,16 @@ const create = `
     cost,
     phone_number,
     phone_number2,
-    workplace,
     time,
     seller,
     zone,
-    collector,
+    workplace,
+    monthly_income,
     passport_series,
     description,
-    given_day,
-    monthly_income
+    given_day
     )
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,$13)
     RETURNING *;
 `;
 
@@ -44,18 +80,16 @@ const updateQuery = `
         time = $7,
         seller = $8,
         zone = $9,
-        collector = $10,
-        passport_series = $11,
-        description = $12,
-        given_day = $13,
-        monthly_income = $14,
+        passport_series = $10,
+        description = $11,
+        given_day = $12,
+        monthly_income = $13,
         updatedAt = NOW()
-      WHERE id = $15
+      WHERE id = $14
       RETURNING *;
 `;
-const deleteUserQuery = `
-    DELETE FROM users WHERE id = $1;
-`;
+
+const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
 const countAllUsers = async () => {
   try {
@@ -76,10 +110,11 @@ const getAll = async (page = 1, limit = 20) => {
     console.error("Error executing query in getAll", e.message);
   }
 };
+
 const getById = async (id) => {
   try {
     const res = await pool.query(selectByIdQuery, [id]);
-    return res.rows;
+    return res.rows[0];
   } catch (e) {
     console.error("Error executing query by getById", e.message);
   }
@@ -92,16 +127,17 @@ const createUser = async (userData) => {
     cost,
     phone_number,
     phone_number2,
-    workplace,
+    workplace_id,
     time,
-    zone,
+    zone_id,
     seller,
-    collector,
     passport_series,
     description,
     given_day,
   } = userData;
-  const monthly_income = cost / time;
+
+  const monthly_income = time && cost ? cost / time : 0;
+
   try {
     const res = await pool.query(create, [
       name,
@@ -109,19 +145,18 @@ const createUser = async (userData) => {
       cost,
       phone_number,
       phone_number2,
-      workplace,
       time,
       seller,
-      zone,
-      collector,
+      zone_id,
+      workplace_id,
+      monthly_income,
       passport_series,
       description,
       given_day,
-      monthly_income,
     ]);
     return res.rows[0];
   } catch (e) {
-    console.error("Error executing query by createuser", e.message);
+    console.error("Error executing query by createUser", e.message);
   }
 };
 
@@ -132,16 +167,16 @@ const updateModel = async (id, userData) => {
     cost,
     phone_number,
     phone_number2,
-    workplace,
+    workplace_id,
     time,
     seller,
-    zone,
-    collector,
+    zone_id,
     passport_series,
     description,
     given_day,
   } = userData;
-  const monthly_income = cost / time;
+
+  const monthly_income = time && cost ? cost / time : 0;
 
   try {
     const res = await pool.query(updateQuery, [
@@ -150,18 +185,17 @@ const updateModel = async (id, userData) => {
       cost,
       phone_number,
       phone_number2,
-      workplace,
+      workplace_id,
       time,
       seller,
-      zone,
-      collector,
+      zone_id,
       passport_series,
       description,
       given_day,
       monthly_income,
       id,
     ]);
-    return res.rows;
+    return res.rows[0];
   } catch (e) {
     console.error("Error executing query by updateUser", e.message);
   }
@@ -170,11 +204,12 @@ const updateModel = async (id, userData) => {
 const deleteUser = async (id) => {
   try {
     const res = await pool.query(deleteUserQuery, [id]);
-    return res.rowCount;
+    return res.rowCount > 0;
   } catch (e) {
     console.error("Error executing query by deleteUser", e.message);
   }
 };
+
 module.exports = {
   getAll,
   getById,

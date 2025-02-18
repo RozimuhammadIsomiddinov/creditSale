@@ -2,12 +2,104 @@ const express = require("express");
 const {
   getAllCollector,
   getByIdCollector,
-  addCollector,
   updateCollector,
   getCollectorMoney,
 } = require("../controllers/collector/collector");
+const { loginCollector } = require("../controllers/collector/page/login.js");
+const { auth } = require("../middleware/auth");
+const {
+  filterByZoneBoolean,
+  filterByZoneAndWorkplace,
+} = require("../controllers/collector/page/filter.js");
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * /collector/login:
+ *   post:
+ *     summary: Collector login
+ *     tags: [Collectors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               login:
+ *                 type: string
+ *                 example: "collector123"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: Successfully logged in
+ *       401:
+ *         description: Incorrect password
+ *       404:
+ *         description: Collector not found
+ */
+
+/**
+ * @swagger
+ * /collector/filter:
+ *   post:
+ *     summary: Filter collectors by zone and payment status
+ *     tags: [Collectors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               zone_id:
+ *                 type: integer
+ *                 example: 1
+ *               payment_status:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Successfully filtered collectors
+ *       400:
+ *         description: Missing fields or invalid format
+ *       404:
+ *         description: Zone not found
+ */
+
+/**
+ * @swagger
+ * /collector/filter-all:
+ *   post:
+ *     summary: Filter collectors by zone, workplace, and payment status
+ *     tags: [Collectors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               zone_id:
+ *                 type: integer
+ *                 example: 1
+ *               workplace_id:
+ *                 type: integer
+ *                 example: 10
+ *               payment_status:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Successfully filtered collectors
+ *       400:
+ *         description: Missing fields or invalid format
+ *       404:
+ *         description: Zone or workplace not found
+ */
 
 /**
  * @swagger
@@ -55,71 +147,12 @@ const router = express.Router();
  *         description: Collector not found
  */
 
-/**
- * @swagger
- * /collector/add:
- *   post:
- *     summary: Add a new collector
- *     tags: [Collectors]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               collector_name:
- *                 type: string
- *                 example: "John Doe"
- *               description:
- *                 type: string
- *                 example: "Experienced money collector"
- *     responses:
- *       201:
- *         description: Collector added successfully
- *       400:
- *         description: Error occurred while adding collector
- */
+router.post("/login", loginCollector);
+router.post("/filter", filterByZoneBoolean);
+router.post("/filter-all", filterByZoneAndWorkplace);
 
-/**
- * @swagger
- * /collector/update/{id}:
- *   put:
- *     summary: Update a collector
- *     tags: [Collectors]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: Collector ID
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               collector_name:
- *                 type: string
- *                 example: "Updated Name"
- *               description:
- *                 type: string
- *                 example: "Updated description"
- *     responses:
- *       201:
- *         description: Collector updated successfully
- *       400:
- *         description: Error occurred while updating collector
- *       404:
- *         description: Collector not found
- */
-router
-  .get("/", getAllCollector)
-  .get("/all-money", getCollectorMoney)
-  .get("/:id", getByIdCollector)
-  .post("/add", addCollector)
-  .put("/update/:id", updateCollector);
+router.get("/", auth, getAllCollector);
+router.get("/all-money", getCollectorMoney);
+router.get("/:id", getByIdCollector);
 
 module.exports = router;

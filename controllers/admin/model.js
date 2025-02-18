@@ -1,7 +1,6 @@
 require("dotenv").config();
 const pool = require("../../config/dbconfig");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const selectById = `
         SELECT *FROM admin WHERE name = $1;
@@ -23,6 +22,7 @@ const selectByName = async (name) => {
     console.log("error from selectByName" + e.message);
   }
 };
+
 const createAdmin = async () => {
   const { NAME, PASSWORD } = process.env;
 
@@ -43,11 +43,6 @@ const createAdmin = async () => {
   }
 };
 
-const generateJWT = (user) => {
-  return jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "10h",
-  });
-};
 createAdmin();
 
-module.exports = { selectByName, generateJWT };
+module.exports = { selectByName };

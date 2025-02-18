@@ -3,8 +3,8 @@ const pool = require("../config/dbconfig");
 const createZoneTable = async () => {
   const query = `
       CREATE TABLE IF NOT EXISTS zone(
-      id SERIAL,
-      zone_name VARCHAR(200) UNIQUE NOT NULL PRIMARY KEY,
+      id SERIAL PRIMARY KEY,
+      zone_name VARCHAR(200),
       description VARCHAR(500),
       createdat TIMESTAMP DEFAULT NOW()
       )
