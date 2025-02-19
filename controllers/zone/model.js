@@ -79,10 +79,13 @@ const updateQuery = `
 
 //har bir zone bo'yicha hamma pul
 const allSumByZone = `
-  SELECT z.zone_name AS zone_name, COALESCE(SUM(u.cost), 0) AS total_cost
-    FROM zone AS z
-    LEFT JOIN users AS u ON u.zone = z.id
-    GROUP BY z.zone_name;
+  SELECT z.id AS zone_id,
+       z.zone_name,
+       COALESCE(SUM(u.cost), 0) AS total_cost
+FROM zone AS z
+LEFT JOIN users AS u ON u.zone = z.id
+GROUP BY z.zone_name, z.id;
+
 `;
 
 //tushgan pullar
@@ -217,8 +220,9 @@ const getZoneStatistics = async () => {
     // Natijalarni zone_name bo'yicha obyektga joylash
     const zoneStats = {};
 
-    totalCost.rows.forEach(({ zone_name, total_cost }) => {
+    totalCost.rows.forEach(({ zone_id, zone_name, total_cost }) => {
       zoneStats[zone_name] = {
+        zone_id,
         zone_name,
         total_cost,
         total_amount: "0",
