@@ -64,7 +64,7 @@ const addPaymentAmount = async (req, res) => {
     }
 
     return res.status(201).json({
-      message: "Payment added successfully",
+      message: "successfully",
       payment: result.payment,
       user: result.updatedUser,
     });

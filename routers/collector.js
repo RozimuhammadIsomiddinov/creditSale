@@ -225,7 +225,7 @@ router.post("/login", loginCollector);
 router.post("/filter", filterByZoneBoolean);
 router.post("/filter-all", filterByZoneAndWorkplace);
 
-router.get("/", auth, getAllCollector);
+router.get("/", getAllCollector);
 router.get("/all-money", getCollectorMoney);
 router.get("/:id", getByIdCollector);
 
