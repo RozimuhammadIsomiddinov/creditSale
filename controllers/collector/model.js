@@ -23,15 +23,20 @@ const insertInto = `
 `;
 
 const collectByCollectorQuery = `
-      SELECT 
-        c.collector_name, 
-        DATE_TRUNC('month', p.payment_date) AS month,
-        SUM(p.payment_amount) AS total_collected
-    FROM payment p
-    JOIN collector c ON p.collector = c.collector_name
-    WHERE p.payment_date >= DATE_TRUNC('month', NOW())
-    GROUP BY c.collector_name, month
-    ORDER BY month DESC, total_collected DESC;
+     SELECT 
+    z.zone_name, 
+    c.login, 
+    DATE_TRUNC('month', p.payment_date) AS month,
+    SUM(p.payment_amount) AS total_collected,
+    COUNT(*) AS total_payments  -- Nechta to'lov qilinganligi
+FROM payment p
+JOIN collector c ON p.collector_id = c.id
+JOIN zone z ON p.zone_id = z.id
+WHERE p.payment_date >= DATE_TRUNC('month', NOW())
+GROUP BY z.zone_name, c.login, month
+ORDER BY month DESC, total_collected DESC;
+
+
 `;
 
 const thisMonthCollect = `
