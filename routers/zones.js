@@ -4,7 +4,6 @@ const {
   getByIdZone,
   addZone,
   updateZone,
-  filterZoneUsers,
   selectByZone,
 } = require("../controllers/zone/zone");
 
@@ -207,7 +206,7 @@ const router = express.Router();
  */
 
 router.get("/", getAllZone);
-router.get("/about", selectByZone); //swagger kerak
+router.get("/about", selectByZone);
 
 router.get("/:id", getByIdZone);
 router.post("/add", addZone);
