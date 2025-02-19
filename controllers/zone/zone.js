@@ -68,7 +68,7 @@ const updateZone = async (req, res) => {
       .json({ message: "Please provide  required zone_name." });
 
   try {
-    const result1 = await getById(id);
+    const result1 = await getByIdZones(id);
     if (result1.length == 0)
       return res.status(404).json({ message: "Zone has not" });
 
