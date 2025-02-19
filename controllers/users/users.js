@@ -1,7 +1,6 @@
 const { logger } = require("../../logs/log");
-const { getByNameCollector, getByIdCollector } = require("../collector/model");
 const { getByIdWorkplace } = require("../workplace/model");
-const { getByName, getByIdZones } = require("../zone/model");
+const { getByIdZones } = require("../zone/model");
 const {
   getAll,
   getById,
@@ -23,12 +22,18 @@ const countUsers = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
+  const { id } = req.params;
+  if (!id) return res.status(400).json({ message: "send a zone id" });
+
   const { page } = req.query;
   if (!page) {
     return res.status(400).json({ message: "Please send a page number" });
   }
   try {
-    const result = await getAll(page);
+    const result1 = await getByIdZones(id);
+    if (!result1) return res.status(400).json({ message: "zone has not" });
+
+    const result = await getAll(id, page);
     if (result.length === 0) {
       return res.status(404).json({ message: "No users found!" });
     }

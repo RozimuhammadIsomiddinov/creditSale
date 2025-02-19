@@ -35,11 +35,13 @@ const filterByZoneAndWorkplace = async (req, res) => {
     return res.status(400).json({ message: "enter true format" });
   try {
     const result1 = await getByIdZones(zone_id);
-    if (!result1) return res.status(404).json({ message: "zone not found" });
+    if (!result1.length)
+      return res.status(404).json({ message: "zone not found" });
 
     const result2 = await getByIdWorkplace(workplace_id);
-    if (!result2)
+    if (!result2.length)
       return res.status(404).json({ message: "workplace not found" });
+
     const result = await getByZoneAndWorkplace(
       zone_id,
       workplace_id,

@@ -2,7 +2,7 @@ const pool = require("../../config/dbconfig");
 
 const countAll = `SELECT COUNT(*) FROM users;`;
 
-const selectAll = `SELECT 
+const selectAllByZone = `SELECT 
     users.id,
     users.name,
     users.product_name,
@@ -23,7 +23,8 @@ const selectAll = `SELECT
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
- LIMIT $1 OFFSET $2;`;
+  WHERE users.zone = $1
+ LIMIT $2 OFFSET $3;`;
 
 const selectByIdQuery = `SELECT 
     users.id,
@@ -101,10 +102,10 @@ const countAllUsers = async () => {
   }
 };
 
-const getAll = async (page = 1, limit = 20) => {
+const getAll = async (id, page = 1, limit = 20) => {
   try {
     const offset = (page - 1) * limit;
-    const res = await pool.query(selectAll, [limit, offset]);
+    const res = await pool.query(selectAllByZone, [id, limit, offset]);
     return res.rows;
   } catch (e) {
     console.error("Error executing query in getAll", e.message);
@@ -119,7 +120,6 @@ const getById = async (id) => {
     console.error("Error executing query by getById", e.message);
   }
 };
-
 const createUser = async (userData) => {
   const {
     name,
