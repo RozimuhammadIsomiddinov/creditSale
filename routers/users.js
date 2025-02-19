@@ -14,7 +14,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /users:
+ * /users/filter/{id}:
  *   get:
  *     summary: Get all users
  *     tags:
@@ -27,6 +27,9 @@ const router = express.Router();
  *           type: integer
  *           format: int32
  *         description: Page number for pagination
+ *       - in: path
+ *         name: id
+ *         required: true
  *     responses:
  *       200:
  *         description: Successfully retrieved users
@@ -214,12 +217,12 @@ const router = express.Router();
  *         description: Zone or workplace not found
  */
 
-router.get("/", getAllUsers);
 router.get("/count", countUsers);
+router.post("/filter", filterByZoneAndWorkplace);
+
+router.get("/filter/:id", getAllUsers);
 router.get("/:id", getByIdUser);
 router.post("/add", addUser);
-
-router.post("/filter", filterByZoneAndWorkplace);
 
 router.put("/update/:id", updateUser);
 router.delete("/delete/:id", deleteUserByID);
