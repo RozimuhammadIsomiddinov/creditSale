@@ -77,36 +77,52 @@ const updateQuery = `
     RETURNING *;
 `;
 
+//har bir zone bo'yicha hamma pul
+const allSumByZone = `
+  SELECT z.zone_name AS zone_name, COALESCE(SUM(u.cost), 0) AS total_cost
+    FROM zone AS z
+    LEFT JOIN users AS u ON u.zone = z.id
+    GROUP BY z.zone_name;
+`;
+
+//tushgan pullar
 const selectByPayment = `
-      SELECT z.zone_name, SUM(p.payment_amount) AS total_amount
-        FROM payment AS p
-          JOIN zone AS z ON p.zone_id = z.id
-            GROUP BY z.zone_name;
+        SELECT z.zone_name, COALESCE(SUM(p.payment_amount), 0) AS total_amount
+    FROM zone AS z
+    LEFT JOIN payment AS p ON p.zone_id = z.id
+    GROUP BY z.zone_name;
+
 
 `;
 
+//bu oy tushgan pullar
 const selectByZonePaymentMonth = `
-SELECT z.zone_name, SUM(p.payment_amount) AS total_amount
-  FROM payment AS p
-    JOIN zone AS z ON p.zone_id = z.id
-      WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
-        GROUP BY z.zone_name;
+    SELECT z.zone_name, COALESCE(SUM(p.payment_amount), 0) AS total_amount
+    FROM zone AS z
+    LEFT JOIN payment AS p 
+        ON p.zone_id = z.id 
+        AND DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
+    GROUP BY z.zone_name;
+
 `;
 
+//opshi soni to'lagan to'lamagan ham
 const selectByZoneUsersCounts = `
       SELECT z.zone_name, COUNT(u.id) AS user_count
       FROM zone AS z
       LEFT JOIN users AS u ON z.id = u.zone
       GROUP BY z.zone_name;
     `;
+
+//barcha zonalar natijada chiqadi, hatto hamma foydalanuvchilar to'lov qilgan bo'lsa ham
 const selectByNotPayedAllUsers = `
-  SELECT 
-    z.zone_name, 
-    COUNT(p.id) AS paid_users_count
-      FROM payment AS p
-        JOIN zone AS z ON p.zone_id = z.id
-          WHERE p.payment_amount = 0
-            GROUP BY z.zone_name;
+    SELECT 
+        z.zone_name, 
+        COUNT(u.id) - COUNT(CASE WHEN p.payment_amount > 0 THEN u.id END) AS unpaid_users_count
+    FROM zone AS z
+    LEFT JOIN users AS u ON u.zone = z.id
+    LEFT JOIN payment AS p ON p.user_id = u.id
+    GROUP BY z.zone_name;
 `;
 const getAll = async () => {
   try {
@@ -187,57 +203,57 @@ const updatedZone = async (id, zone_name, description) => {
     console.error("Error executing query by updatedZone", e.message);
   }
 };
-//jami pul
-const getByZoneAmount = async () => {
+const getZoneStatistics = async () => {
   try {
-    const res = await pool.query(selectByPayment);
-    return res.rows;
+    const [totalCost, totalPayments, monthlyPayments, totalUsers, unpaidUsers] =
+      await Promise.all([
+        pool.query(allSumByZone),
+        pool.query(selectByPayment),
+        pool.query(selectByZonePaymentMonth),
+        pool.query(selectByZoneUsersCounts),
+        pool.query(selectByNotPayedAllUsers),
+      ]);
+
+    // Natijalarni zone_name bo'yicha obyektga joylash
+    const zoneStats = {};
+
+    totalCost.rows.forEach(({ zone_name, total_cost }) => {
+      zoneStats[zone_name] = {
+        zone_name,
+        total_cost,
+        total_amount: "0",
+        monthly_amount: "0",
+        total_users: "0",
+        unpaid_users: "0",
+      };
+    });
+
+    totalPayments.rows.forEach(({ zone_name, total_amount }) => {
+      if (zoneStats[zone_name])
+        zoneStats[zone_name].total_amount = total_amount;
+    });
+
+    monthlyPayments.rows.forEach(({ zone_name, total_amount }) => {
+      if (zoneStats[zone_name])
+        zoneStats[zone_name].monthly_amount = total_amount;
+    });
+
+    totalUsers.rows.forEach(({ zone_name, user_count }) => {
+      if (zoneStats[zone_name]) zoneStats[zone_name].total_users = user_count;
+    });
+
+    unpaidUsers.rows.forEach(({ zone_name, unpaid_users_count }) => {
+      if (zoneStats[zone_name])
+        zoneStats[zone_name].unpaid_users = unpaid_users_count;
+    });
+
+    return { zones: Object.values(zoneStats) };
   } catch (e) {
-    console.error("Error executing query by getByZoneAmount", e.message);
+    console.error("Error executing getZoneStatistics", e.message);
+    throw e;
   }
 };
 
-//bu oy pul to'lagan
-const getByZoneMonth = async () => {
-  try {
-    const res = await pool.query(selectByZonePaymentMonth);
-    return res.rows;
-  } catch (e) {
-    console.error("Error executing query by getByZoneMonth", e.message);
-  }
-};
-
-//hammasini soni zonelar bo'yicha
-const getByZoneUsersCount = async () => {
-  try {
-    const res = await pool.query(selectByZoneUsersCounts);
-    return res.rows;
-  } catch (e) {
-    console.error("Error executing query by getByZoneUsersCount", e.message);
-  }
-};
-
-//to'lamaganlar soni
-const getByZoneUsersNotPayed = async () => {
-  try {
-    const res = await pool.query(selectByNotPayedAllUsers);
-    return res.rows;
-  } catch (e) {
-    console.error("Error executing query by getByZoneUsersNotPayed", e.message);
-  }
-};
-
-/*
-const filterZone = async (zone, page = 1, limit = 200) => {
-  const offset = (page - 1) * limit;
-
-  try {
-    const res = await pool.query(filter, [zone, limit, offset]);
-    return res.rows;
-  } catch (e) {
-    console.error("Error executing query by filterZone", e.message);
-  }
-};*/
 module.exports = {
   getAll,
   getByName,
@@ -245,9 +261,6 @@ module.exports = {
   getByIdZones,
   updatedZone,
   getByZoneBool,
-  getByZoneMonth,
-  getByZoneAmount,
-  getByZoneUsersCount,
+  getZoneStatistics,
   getByZoneAndWorkplace,
-  getByZoneUsersNotPayed,
 };
