@@ -1,5 +1,4 @@
 const pool = require("../../config/dbconfig");
-const { getById } = require("../users/model");
 //1.
 //hamma pul
 const allMoneyQuery = `
@@ -67,7 +66,7 @@ const countMonthQuery = `
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
-  SELECT 
+  SELECT DISTINCT ON (user_id)
     users.id,
     users.name,
     users.product_name,
@@ -89,8 +88,8 @@ FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
 JOIN payment p ON users.id = p.user_id  -- payment jadvali bilan ulanish
-WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
-
+WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
+ORDER BY user_id, updatedat DESC;
 `;
 //4.
 // bugun to'laganlar
@@ -107,7 +106,7 @@ const countDayQuery = `
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
 const selectDayQuery = `
-SELECT 
+SELECT DISTINCT ON (user_id)
     users.id,
     users.name,
     users.product_name,
@@ -129,7 +128,9 @@ FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
 JOIN payment p ON users.id = p.user_id  -- payment jadvali bilan ulanish
-    WHERE DATE(p.payment_date) = CURRENT_DATE;
+    WHERE DATE(p.payment_date) = CURRENT_DATE
+    ORDER BY user_id, updatedat DESC;
+
     `;
 //1.
 const selectIncome = async () => {
@@ -201,13 +202,8 @@ const sumMonth = async () => {
 const selectMonth = async () => {
   try {
     const { rows } = await pool.query(selectMonthQuery);
-    //bir xil id liklarni bitta qildim yani faqat qaysi user to'lov qilganini ko'rsatdim
-    const uniqueUserIds = [...new Set(rows.map((item) => item.user_id))];
-    const results = await Promise.all(
-      uniqueUserIds.map((userId) => getById(userId))
-    );
 
-    return results;
+    return rows;
   } catch (e) {
     console.error("Error executing query in selectMonth", e.message);
   }
@@ -245,13 +241,7 @@ const selectDay = async () => {
   try {
     const { rows } = await pool.query(selectDayQuery);
 
-    //bir xil id liklarni bitta qildim yani faqat qaysi user to'lov qilganini ko'rsatdim
-    const uniqueUserIds = [...new Set(rows.map((item) => item.user_id))];
-    const results = await Promise.all(
-      uniqueUserIds.map((userId) => getById(userId))
-    );
-
-    return results;
+    return rows;
   } catch (e) {
     console.error("Error executing query by selectday", e.message);
   }

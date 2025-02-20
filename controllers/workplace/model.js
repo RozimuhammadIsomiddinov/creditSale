@@ -7,9 +7,6 @@ const selectQuery = `
 const selectByIdQuery = `
         SELECT *FROM workplace  WHERE id = $1;
 `;
-const selectByName = `
-      SELECT *FROM workplace WHERE  workplace_name ILIKE $1;
-`;
 const insertInto = `
     INSERT INTO workplace (
     workplace_name,
@@ -19,13 +16,6 @@ const insertInto = `
     RETURNING *;
 `;
 
-const filterQuery = ` 
-    SELECT *FROM users AS u 
-      JOIN workplace AS w 
-        ON u.workplace = w.id 
-          WHERE u.workplace = $1
-            LIMIT $2 OFFSET $3;
-`;
 const updateQuery = `
     UPDATE workplace    
     SET 
@@ -77,21 +67,9 @@ const updatedWorkplace = async (id, workplace_name, description) => {
   }
 };
 
-const filter = async (id, page = 1, limit = 200) => {
-  const offset = (page - 1) * limit;
-
-  try {
-    const res = await pool.query(filterQuery, [id, limit, offset]);
-    return res.rows;
-  } catch (e) {
-    console.error("Error executing query by filterWorkplace", e.message);
-  }
-};
-
 module.exports = {
   getAllWorkplace,
   getByIdWorkplace,
   createWorkplace,
   updatedWorkplace,
-  filter,
 };

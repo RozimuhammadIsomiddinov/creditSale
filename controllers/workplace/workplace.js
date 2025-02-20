@@ -3,7 +3,6 @@ const {
   getByIdWorkplace,
   createWorkplace,
   updatedWorkplace,
-  filter,
 } = require("./model");
 
 const selectAllWorkplace = async (req, res) => {
@@ -65,7 +64,7 @@ const updateWorkplace = async (req, res) => {
   if (!workplace_name)
     return res
       .status(400)
-      .json({ message: "Please provide  required Workplace_name." });
+      .json({ message: "Please provide required Workplace_name." });
   try {
     const result1 = await getByIdWorkplace(id);
     if (result1.length == 0)
@@ -75,7 +74,7 @@ const updateWorkplace = async (req, res) => {
     if (!result) return res.status(400).json({ message: "unsuccesfully" });
 
     return res.status(201).json({
-      message: "Workplace updated successfully!",
+      message: "successfully!",
       result,
     });
   } catch (e) {
@@ -85,29 +84,9 @@ const updateWorkplace = async (req, res) => {
   }
 };
 
-const filterWorkplace = async (req, res) => {
-  const { id } = req.params;
-  if (!id)
-    return res.status(400).json({ message: "please send Workplace's id" });
-  const { page } = req.query;
-  if (!page)
-    return res.status(400).json({ message: "please send page number" });
-  try {
-    const result1 = await getByIdWorkplace(id);
-    if (result1.length == 0)
-      return res.status(404).json({ message: "Workplace has not" });
-    const result = await filter(id, page);
-    res.status(200).json(result);
-  } catch (e) {
-    res
-      .status(400)
-      .json({ message: "Error from filterWorkplaceUsers", error: e.message });
-  }
-};
 module.exports = {
   selectAllWorkplace,
   selectByIDWorkplace,
   addWorkplace,
   updateWorkplace,
-  filterWorkplace,
 };

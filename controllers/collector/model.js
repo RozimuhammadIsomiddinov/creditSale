@@ -2,7 +2,7 @@ const pool = require("../../config/dbconfig");
 const bcrypt = require("bcryptjs");
 
 const selectQuery = `
-    SELECT *FROM collector;
+    SELECT id, login, createdat FROM collector;
 `;
 
 const selectByIdQuery = `
@@ -25,7 +25,8 @@ const insertInto = `
 const collectByCollectorQuery = `
      SELECT 
     z.zone_name, 
-    c.login, 
+    c.login,
+    c.id,
     DATE_TRUNC('month', p.payment_date) AS month,
     SUM(p.payment_amount) AS total_collected,
     COUNT(*) AS total_payments  -- Nechta to'lov qilinganligi
@@ -33,10 +34,8 @@ FROM payment p
 JOIN collector c ON p.collector_id = c.id
 JOIN zone z ON p.zone_id = z.id
 WHERE p.payment_date >= DATE_TRUNC('month', NOW())
-GROUP BY z.zone_name, c.login, month
+GROUP BY z.zone_name, c.login, c.id, month
 ORDER BY month DESC, total_collected DESC;
-
-
 `;
 
 const thisMonthCollect = `
@@ -59,7 +58,7 @@ GROUP BY
 ORDER BY
     total_payment DESC;
 `;
-
+//vaqtga qarab hisoblaydi
 const oldMOnthCollect = `
   SELECT
     zone.zone_name AS zon_name,
@@ -81,52 +80,7 @@ ORDER BY
     total_payment DESC;
 
 `;
-const allCountByCollector = `
-    SELECT COUNT(*) FROM payment WHERE id = $1;
-`;
-const thisMonthCount = `
-    SELECT
-        zone.zone_name AS zon_name,
-        collector.login,
-        COUNT(payment.id) AS total_count  -- to'lovlar sonini hisoblash
-    FROM
-        payment
-    JOIN
-        collector ON payment.collector_id = collector.id
-    JOIN
-        zone ON payment.zone_id = zone.id  -- zone jadvalini qo'shish
-    WHERE
-        payment.payment_date >= date_trunc('month', CURRENT_DATE)  -- Joriy oyning boshidan
-        AND payment.payment_date < date_trunc('month', CURRENT_DATE + INTERVAL '1 month')  -- Kelgusi oydan oldin
-        AND collector.id = $1
-    GROUP BY
-        zone.zone_name, collector.login
-    ORDER BY
-        total_count DESC;
 
-`;
-
-const oldMonthCount = `
-SELECT
-    zone.zone_name AS zon_name,
-    collector.login,
-    COUNT(payment.id) AS total_count  -- payment.id ni hisoblash, to'lovlar soni
-FROM
-    payment
-JOIN
-    collector ON payment.collector_id = collector.id
-JOIN
-    zone ON payment.zone_id = zone.id  -- zone jadvalini qo'shish
-WHERE
-    payment.payment_date >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')  -- O'tgan oyning boshlanishi
-    AND payment.payment_date < date_trunc('month', CURRENT_DATE)  -- Joriy oyning boshlanishi
-    AND collector.id = $1
-GROUP BY
-    zone.zone_name, collector.id, collector.login  -- zone_name ham GROUP BY ga qo'shildi
-ORDER BY
-    total_count DESC;
-
-`;
 const getThisMonthByID = async (id) => {
   try {
     const { rowCount, rows } = await pool.query(thisMonthCollect, [id]);

@@ -60,7 +60,6 @@ const updateQuery = `
     RETURNING *;
 `;
 
-// To'lov qo'shish funksiyasi
 const addPayment = async (
   user_id,
   collector_id,
@@ -73,9 +72,8 @@ const addPayment = async (
 ) => {
   const client = await pool.connect();
   try {
-    await client.query("BEGIN"); // Transactionni boshlash
+    await client.query("BEGIN");
 
-    //`payments` jadvaliga yangi yozuv qo'shish
     const payment = await client.query(insertPaymentOld, [
       user_id,
       collector_id,
@@ -86,8 +84,7 @@ const addPayment = async (
       description,
     ]);
 
-    // `users.payment` ustunini yangilash
-    if (!type) {
+    if (type) {
       var updatedUser = await client.query(updateUserPaymentQuery, [
         paymentAmount,
         user_id,
@@ -117,16 +114,16 @@ const addPayment = async (
       }
     });
 
-    await client.query("COMMIT"); // Transactionni yakunlash
+    await client.query("COMMIT");
     return {
       payment: payment.rows[0],
       updatedUser: updatedUser.rows[0],
     };
   } catch (e) {
-    await client.query("ROLLBACK"); // Xatolik bo'lsa transactionni bekor qilish
+    await client.query("ROLLBACK");
     console.error("Error in addPayment:", e.message);
   } finally {
-    client.release(); // Connectionni bo'shatish
+    client.release();
   }
 };
 

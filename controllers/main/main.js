@@ -40,6 +40,7 @@ const getNotPayedUsers = async (req, res) => {
     const result1 = await selectIncome();
     const result2 = await payedMoneyUsers();
     const sum = Number(result1.sum) - Number(result2.sum);
+
     const result3 = await notPayedUsers(page ? page : 1);
     res.status(200).json({ count, sum, result: result3 });
   } catch (e) {
@@ -64,7 +65,6 @@ const getMonthSum = async (req, res) => {
 };
 
 const getTodaySum = async (req, res) => {
-
   try {
     const { sum } = await sumDay();
     const { count } = await countDay();
@@ -80,10 +80,7 @@ const getTodaySum = async (req, res) => {
 
 module.exports = {
   getAllMoney,
-
-  getNotPayedUsers,
-
   getMonthSum,
-
   getTodaySum,
+  getNotPayedUsers,
 };

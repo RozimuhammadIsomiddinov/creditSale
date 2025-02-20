@@ -3,7 +3,6 @@ const {
   selectAllWorkplace,
   selectByIDWorkplace,
   addWorkplace,
-  filterWorkplace,
   updateWorkplace,
 } = require("../controllers/workplace/workplace");
 
@@ -94,35 +93,11 @@ const router = express.Router();
  *       404:
  *         description: Workplace not found
  *
- * /workplace/filter/{id}:
- *   post:
- *     summary: Filter workplaces
- *     tags:
- *       - Workplaces
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *       - in: query
- *         name: page
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Filtered workplaces
- *       400:
- *         description: Please send workplace's id and page number
- *       404:
- *         description: Workplace not found
  */
 
 router.get("/", selectAllWorkplace);
 router.get("/:id", selectByIDWorkplace);
 router.post("/add", addWorkplace);
-router.post("/filter/:id", filterWorkplace);
 router.put("/update/:id", updateWorkplace);
 
 module.exports = router;

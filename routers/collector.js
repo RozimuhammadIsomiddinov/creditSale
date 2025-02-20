@@ -1,8 +1,8 @@
 const express = require("express");
 const {
   getAllCollector,
-  getByIdCollector,
   getCollectorMoney,
+  getByIdCollectorCont,
 } = require("../controllers/collector/collector");
 const { loginCollector } = require("../controllers/collector/page/login.js");
 const { auth } = require("../middleware/auth");
@@ -43,10 +43,9 @@ const router = express.Router();
  *       404:
  *         description: Collector not found
  */
-
 /**
  * @swagger
- * /collector/filter-zone:
+ * /collector/statistic-by-users-all/{id}:
  *   post:
  *     summary: Filter collectors by zone
  *     tags: [Collectors-Filter]
@@ -54,22 +53,17 @@ const router = express.Router();
  *       - in: query
  *         name: page
  *         required: true
- *         description: number of page
+ *         description: Number of page
+ *         example: 1
  *         schema:
  *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               zone_id:
- *                 type: integer
- *                 example: 1
- *               collector_id:
- *                  type: number
- *                  example: 1
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Collector ID
+ *         schema:
+ *           type: integer
+ *           example: 1
  *     responses:
  *       200:
  *         description: Successfully filtered collectors
@@ -81,10 +75,18 @@ const router = express.Router();
 
 /**
  * @swagger
- * /collector/filter-all:
+ * /collector/statistic-by-users-zone:
  *   post:
  *     summary: Filter collectors by zone, workplace, and payment status
  *     tags: [Collectors-Filter]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: true
+ *         description: page for pagination
+ *         schema:
+ *           type: integer
+ *           example: 1
  *     requestBody:
  *       required: true
  *       content:
@@ -92,15 +94,12 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
+ *               collector_id:
+ *                type: integer
+ *                example: 1
  *               zone_id:
  *                 type: integer
  *                 example: 1
- *               workplace_id:
- *                 type: integer
- *                 example: 10
- *               payment_status:
- *                 type: boolean
- *                 example: false
  *     responses:
  *       200:
  *         description: Successfully filtered collectors
@@ -226,14 +225,14 @@ const router = express.Router();
  *         description: Collector not found
  */
 
-router.get("/statistic/:id", selectThisOldMonthByID);
-
-router.post("/login", loginCollector);
-router.post("/filter-zone", filterByZoneBoolean);
-router.post("/filter-all", filterByZoneAndWorkplace);
-
 router.get("/", getAllCollector);
+router.get("/statistic/:id", selectThisOldMonthByID);
 router.get("/all-money", getCollectorMoney);
-router.get("/:id", getByIdCollector);
+router.get("/:id", getByIdCollectorCont);
+router.post("/login", loginCollector);
+
+router.post("/statistic-by-users-all/:id", filterByZoneBoolean); //opshi vaqtdagi collectorga tegishli to'lov qilgan userlar ro'yhati
+
+router.post("/statistic-by-users-zone", filterByZoneAndWorkplace);
 
 module.exports = router;

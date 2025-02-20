@@ -107,21 +107,20 @@ const router = express.Router();
  *                   type: number
  *                   example: 100
  *                 collector_id:
- *                   type: string
- *                   example: "123456"
+ *                   type: number
+ *                   example: 1
  *                 zone_id:
- *                   type: string
- *                   example: "zone_1"
+ *                   type: number
+ *                   example: 1
  *                 payment_month:
  *                   type: string
  *                   example: "January"
  *                 payment_date:
  *                   type: string
- *                   format: date
- *                   example: "2024-01-01"
+ *                   format: date-time
  *                 type:
- *                   type: string
- *                   example: "true or false"
+ *                   type: boolean
+ *                   example: true
  *                 description:
  *                   type: string
  *                   example: "Monthly payment"

@@ -42,6 +42,10 @@ const addPaymentAmount = async (req, res) => {
     return res.status(404).json({
       message: "collector has not",
     });
+
+  if (typeof type != "boolean")
+    return res.status(400).json({ message: "enter a true format" });
+
   const amountNumber = parseFloat(amount);
   if (isNaN(amountNumber)) {
     return res.status(400).json({ message: "Please send a valid amount" });

@@ -8,7 +8,7 @@ const selectByIdQuery = `
         SELECT *FROM zone  WHERE id = $1;
 `;
 
-const selectByZoneBool1 = `
+const selectByCollectorStats = `
    SELECT 
     users.id,
     users.name,
@@ -30,7 +30,10 @@ const selectByZoneBool1 = `
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-   WHERE zone = $1 AND payment_status = $2 LIMIT $3 OFFSET $4;
+JOIN payment  ON payment.user_id = users.id 
+JOIN collector ON payment.collector_id = collector.id 
+WHERE collector.id = $1 
+ LIMIT $2 OFFSET $3;
 `;
 
 const selectByZoneAndWorkplace = `
@@ -55,9 +58,11 @@ const selectByZoneAndWorkplace = `
   FROM users
   JOIN zone ON users.zone = zone.id
   JOIN workplace ON users.workplace = workplace.id
-   WHERE zone = $1 AND workplace = $2 
-   AND payment_status = $3 
-      LIMIT $4 OFFSET $5;
+  JOIN payment  ON payment.user_id = users.id 
+  JOIN collector ON payment.collector_id = collector.id
+   WHERE payment.payment_date >= DATE_TRUNC('month', NOW())
+   AND collector.id = $1 AND zone.id = $2 
+      LIMIT $3 OFFSET $4;
 `;
 const insertInto = `
     INSERT INTO zone (
@@ -154,31 +159,24 @@ const getByName = async (zone_name) => {
   }
 };
 
-const getByZoneBool = async (id, type, page = 1, limit = 200) => {
+const getByZoneBool = async (id, page = 1, limit = 200) => {
   const offset = (page - 1) * limit;
 
   try {
-    const res = await pool.query(selectByZoneBool1, [id, limit, offset]);
+    const res = await pool.query(selectByCollectorStats, [id, limit, offset]);
     return res.rows;
   } catch (e) {
     console.error("Error executing query in getByZoneBool", e.message);
   }
 };
 
-const getByZoneAndWorkplace = async (
-  zone_id,
-  workplace_id,
-  type,
-  page = 1,
-  limit = 200
-) => {
+const getByZoneAndWorkplace = async (id, zone_id, page = 1, limit = 200) => {
   const offset = (page - 1) * limit;
 
   try {
     const res = await pool.query(selectByZoneAndWorkplace, [
+      id,
       zone_id,
-      workplace_id,
-      type,
       limit,
       offset,
     ]);

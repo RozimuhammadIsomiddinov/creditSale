@@ -156,54 +156,6 @@ const router = express.Router();
  *       404:
  *         description: Zone not found
  *
- * /zone/filter:
- *   post:
- *     summary: Filter users by zone
- *     description: Retrieve a paginated list of users belonging to a specific zone.
- *     tags:
- *       - Zones
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               zone:
- *                 type: string
- *                 description: The name of the zone to filter users.
- *             required:
- *               - zone
- *     parameters:
- *       - in: query
- *         name: page
- *         required: true
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: The page number for pagination.
- *     responses:
- *       200:
- *         description: Successfully retrieved users for the specified zone.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   name:
- *                     type: string
- *                   email:
- *                     type: string
- *                   zone:
- *                     type: string
- *       400:
- *         description: Bad request, missing required fields (zone or page).
- *       404:
- *         description: No users found in the specified zone.
  */
 
 router.get("/", getAllZone);

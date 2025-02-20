@@ -48,12 +48,12 @@ const options = {
 const specs = swaggerJsdoc(options);
 
 app.use("/admin", routerAdmin);
-app.use("/workplace", routerWorkplace);
-app.use("/users", routerUsers);
-app.use("/payment", routerPayment);
-app.use("/zone", routerZone);
 app.use("/collector", routerCollector);
 app.use("/main", routerMain);
+app.use("/payment", routerPayment);
+app.use("/users", routerUsers);
+app.use("/workplace", routerWorkplace);
+app.use("/zone", routerZone);
 app.get("/excel-download", getByZone);
 
 app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
