@@ -241,6 +241,14 @@ const router = express.Router();
  *     summary: Get all  users by zone, workplace, and payment status
  *     tags:
  *       - Users-Filter
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           format: int32
+ *         description: Page number for pagination
  *     requestBody:
  *       required: true
  *       content:
@@ -273,10 +281,10 @@ const router = express.Router();
  */
 
 router.get("/count", countUsers);
-router.post("/filter", filterByZoneAndWorkplace);
 
 router.get("/filter/:id", getAllUsers);
 router.post("/filter-workplace", getAllUsersZoneAndWorkplace);
+router.post("/filter", filterByZoneAndWorkplace);
 
 router.get("/:id", getByIdUser);
 router.post("/add", addUser);

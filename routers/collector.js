@@ -46,10 +46,17 @@ const router = express.Router();
 
 /**
  * @swagger
- * /collector/filter:
+ * /collector/filter-zone:
  *   post:
- *     summary: Filter collectors by zone and payment status
- *     tags: [Collectors]
+ *     summary: Filter collectors by zone
+ *     tags: [Collectors-Filter]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: true
+ *         description: number of page
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -60,9 +67,9 @@ const router = express.Router();
  *               zone_id:
  *                 type: integer
  *                 example: 1
- *               payment_status:
- *                 type: boolean
- *                 example: true
+ *               collector_id:
+ *                  type: number
+ *                  example: 1
  *     responses:
  *       200:
  *         description: Successfully filtered collectors
@@ -77,7 +84,7 @@ const router = express.Router();
  * /collector/filter-all:
  *   post:
  *     summary: Filter collectors by zone, workplace, and payment status
- *     tags: [Collectors]
+ *     tags: [Collectors-Filter]
  *     requestBody:
  *       required: true
  *       content:
@@ -222,7 +229,7 @@ const router = express.Router();
 router.get("/statistic/:id", selectThisOldMonthByID);
 
 router.post("/login", loginCollector);
-router.post("/filter", filterByZoneBoolean);
+router.post("/filter-zone", filterByZoneBoolean);
 router.post("/filter-all", filterByZoneAndWorkplace);
 
 router.get("/", getAllCollector);
