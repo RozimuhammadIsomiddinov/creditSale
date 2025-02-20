@@ -8,6 +8,7 @@ const {
   updateModel,
   deleteUser,
   countAllUsers,
+  getByZoneWorkplace,
 } = require("./model");
 
 const countUsers = async (req, res) => {
@@ -45,6 +46,33 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getAllUsersZoneAndWorkplace = async (req, res) => {
+  const { zone_id, workplace_id } = req.body;
+  if (!zone_id || !workplace_id)
+    return res.status(400).json({ message: "send zone and workplace id" });
+
+  const { page } = req.query;
+  if (!page) {
+    return res.status(400).json({ message: "Please send a page number" });
+  }
+  try {
+    const result1 = await getByIdZones(zone_id);
+    if (!result1.length)
+      return res.status(404).json({ message: "zone not found" });
+
+    const result2 = await getByIdWorkplace(workplace_id);
+    if (!result2.length)
+      return res.status(404).json({ message: "workplace not found" });
+
+    const result = await getByZoneWorkplace(zone_id, workplace_id);
+    return res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({
+      message: "Error from getAllUsersZoneAndWorkplace",
+      error: e.message,
+    });
+  }
+};
 const getByIdUser = async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -230,10 +258,11 @@ const deleteUserByID = async (req, res) => {
 };
 
 module.exports = {
-  getAllUsers,
-  getByIdUser,
   addUser,
   updateUser,
-  deleteUserByID,
   countUsers,
+  getAllUsers,
+  getByIdUser,
+  deleteUserByID,
+  getAllUsersZoneAndWorkplace,
 };

@@ -25,7 +25,31 @@ JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
   WHERE users.zone = $1
  LIMIT $2 OFFSET $3;`;
-
+const selectAllByZoneAndWorkplace = `
+SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat
+FROM users
+JOIN zone ON users.zone = zone.id
+JOIN workplace ON users.workplace = workplace.id
+  WHERE users.zone = $1 AND users.workplace = $2
+ LIMIT $3 OFFSET $4;
+`;
 const selectByIdQuery = `SELECT 
     users.id,
     users.name,
@@ -102,7 +126,7 @@ const countAllUsers = async () => {
   }
 };
 
-const getAll = async (id, page = 1, limit = 20) => {
+const getAll = async (id, page = 1, limit = 200) => {
   try {
     const offset = (page - 1) * limit;
     const res = await pool.query(selectAllByZone, [id, limit, offset]);
@@ -112,6 +136,26 @@ const getAll = async (id, page = 1, limit = 20) => {
   }
 };
 
+const getByZoneWorkplace = async (
+  zone_id,
+  workplace_id,
+  page = 1,
+  limit = 200
+) => {
+  const offset = (page - 1) * limit;
+
+  try {
+    const res = await pool.query(selectAllByZoneAndWorkplace, [
+      zone_id,
+      workplace_id,
+      limit,
+      offset,
+    ]);
+    return res.rows;
+  } catch (e) {
+    console.error("Error executing query by getByZoneWorkplace", e.message);
+  }
+};
 const getById = async (id) => {
   try {
     const res = await pool.query(selectByIdQuery, [id]);
@@ -120,6 +164,7 @@ const getById = async (id) => {
     console.error("Error executing query by getById", e.message);
   }
 };
+
 const createUser = async (userData) => {
   const {
     name,
@@ -214,7 +259,8 @@ module.exports = {
   getAll,
   getById,
   createUser,
-  updateModel,
   deleteUser,
+  updateModel,
   countAllUsers,
+  getByZoneWorkplace,
 };
