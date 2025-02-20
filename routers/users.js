@@ -1,11 +1,12 @@
 const express = require("express");
 const {
+  addUser,
+  countUsers,
+  updateUser,
   getAllUsers,
   getByIdUser,
-  addUser,
-  updateUser,
   deleteUserByID,
-  countUsers,
+  getAllUsersZoneAndWorkplace,
 } = require("../controllers/users/users");
 const {
   filterByZoneAndWorkplace,
@@ -16,9 +17,9 @@ const router = express.Router();
  * @swagger
  * /users/filter/{id}:
  *   get:
- *     summary: Get all users
+ *     summary: Get all users By Zone
  *     tags:
- *       - Users
+ *       - Users-Filter
  *     parameters:
  *       - in: query
  *         name: page
@@ -30,6 +31,10 @@ const router = express.Router();
  *       - in: path
  *         name: id
  *         required: true
+ *         schema:
+ *           type: integer
+ *           format: int32
+ *         description: Enter a zone_id
  *     responses:
  *       200:
  *         description: Successfully retrieved users
@@ -181,11 +186,61 @@ const router = express.Router();
 
 /**
  * @swagger
+ * /users/filter-workplace:
+ *   post:
+ *     summary: Get all users By Zone and Workplace
+ *     tags:
+ *       - Users-Filter
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           format: int32
+ *         description: Page number for pagination
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               zone_id:
+ *                 type: number
+ *                 example: 1
+ *               workplace_id:
+ *                 type: number
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: List of users matching the given filters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   zone_id:
+ *                     type: number
+ *                     example: 1
+ *                   workplace_id:
+ *                     type: number
+ *                     example: 1
+ *       400:
+ *         description: Bad request, missing or incorrect parameters
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
  * /users/filter:
  *   post:
- *     summary: Filter users by zone, workplace, and payment status
+ *     summary: Get all  users by zone, workplace, and payment status
  *     tags:
- *       - Users
+ *       - Users-Filter
  *     requestBody:
  *       required: true
  *       content:
@@ -198,7 +253,7 @@ const router = express.Router();
  *                 example: 1
  *               workplace_id:
  *                 type: integer
- *                 example: 10
+ *                 example: 1
  *               payment_status:
  *                 type: boolean
  *                 example: true
@@ -221,6 +276,8 @@ router.get("/count", countUsers);
 router.post("/filter", filterByZoneAndWorkplace);
 
 router.get("/filter/:id", getAllUsers);
+router.post("/filter-workplace", getAllUsersZoneAndWorkplace);
+
 router.get("/:id", getByIdUser);
 router.post("/add", addUser);
 
