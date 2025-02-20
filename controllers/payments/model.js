@@ -87,7 +87,7 @@ const addPayment = async (
     ]);
 
     // `users.payment` ustunini yangilash
-    if (type == false) {
+    if (!type) {
       var updatedUser = await client.query(updateUserPaymentQuery, [
         paymentAmount,
         user_id,
