@@ -9,7 +9,7 @@ const selectByIdQuery = `
 `;
 
 const selectByZoneBool1 = `
-    SELECT 
+   SELECT 
     users.id,
     users.name,
     users.product_name,
@@ -27,9 +27,9 @@ const selectByZoneBool1 = `
     users.description,
     users.given_day,
     users.updatedat
-  FROM users
-  JOIN zone ON users.zone = zone.id
-  JOIN workplace ON users.workplace = workplace.id
+FROM users
+JOIN zone ON users.zone = zone.id
+JOIN workplace ON users.workplace = workplace.id
    WHERE zone = $1 AND payment_status = $2 LIMIT $3 OFFSET $4;
 `;
 
@@ -158,7 +158,7 @@ const getByZoneBool = async (id, type, page = 1, limit = 200) => {
   const offset = (page - 1) * limit;
 
   try {
-    const res = await pool.query(selectByZoneBool1, [id, type, limit, offset]);
+    const res = await pool.query(selectByZoneBool1, [id, limit, offset]);
     return res.rows;
   } catch (e) {
     console.error("Error executing query in getByZoneBool", e.message);

@@ -4,19 +4,23 @@ const {
   getByZoneAndWorkplace,
   getByIdZones,
 } = require("../../zone/model");
+const { getByIdCollector } = require("../model");
 
 const filterByZoneBoolean = async (req, res) => {
   const { page } = req.query;
-  const { zone_id, payment_status } = req.body;
-  if (!zone_id) return res.status(400).json({ message: "fill all fields" });
-  if (typeof payment_status != "boolean")
-    return res.status(400).json({ message: "enter true format" });
-
+  const { zone_id, collector_id } = req.body;
+  if (!zone_id || !collector_id)
+    return res.status(400).json({ message: "fill all fields" });
   try {
     const result1 = await getByIdZones(zone_id);
-    if (!result1) return res.status(404).json({ message: "zone not found" });
+    if (!result1.length)
+      return res.status(404).json({ message: "zone not found" });
 
-    const result = await getByZoneBool(zone_id, payment_status, page);
+    const result2 = await getByIdCollector(collector_id);
+    if (!result2.length)
+      return res.status(404).json({ message: "collector not found" });
+
+    const result = await getByZoneBool(zone_id, collector_id, page);
     return res.status(200).json(result);
   } catch (e) {
     res
