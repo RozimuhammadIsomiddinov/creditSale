@@ -10,6 +10,7 @@ const {
   countAllUsers,
   getByZoneWorkplace,
   search,
+  getByZoneWorkplaceBoolean,
 } = require("./model");
 
 const countUsers = async (req, res) => {
@@ -70,6 +71,37 @@ const getAllUsersZoneAndWorkplace = async (req, res) => {
   } catch (e) {
     res.status(500).json({
       message: "Error from getAllUsersZoneAndWorkplace",
+      error: e.message,
+    });
+  }
+};
+
+const getAllUsersZoneAndWorkplaceBoolean = async (req, res) => {
+  const { page } = req.query;
+  if (!page) return res.status(400).json({ message: "send a page number" });
+
+  const { zone_id, workplace_id, payment_status } = req.body;
+  if (!zone_id || !workplace_id)
+    return res.status(400).json({ message: "send zone_id and workplace_id" });
+  try {
+    const result1 = await getByIdZones(zone_id);
+    if (!result1.length)
+      return res.status(404).json({ message: "zone not found" });
+
+    const result2 = await getByIdWorkplace(workplace_id);
+    if (!result2.length)
+      return res.status(404).json({ message: "workplace not found" });
+
+    const result = await getByZoneWorkplaceBoolean(
+      zone_id,
+      workplace_id,
+      payment_status,
+      page
+    );
+    return res.status(200).json(result);
+  } catch (e) {
+    res.status(500).json({
+      message: "Error from getAllUsersZoneAndWorkplaceBoolean",
       error: e.message,
     });
   }
@@ -286,4 +318,5 @@ module.exports = {
   deleteUserByID,
   searchPhoneNameID,
   getAllUsersZoneAndWorkplace,
+  getAllUsersZoneAndWorkplaceBoolean,
 };
