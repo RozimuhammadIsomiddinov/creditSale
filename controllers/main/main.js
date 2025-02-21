@@ -28,7 +28,7 @@ const getAllMoney = async (req, res) => {
     });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getAllMoney", error: e.message });
   }
 };
@@ -45,7 +45,7 @@ const getNotPayedUsers = async (req, res) => {
     res.status(200).json({ count, sum, result: result3 });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getNotPayedUsers", error: e.message });
   }
 };
@@ -59,7 +59,7 @@ const getMonthSum = async (req, res) => {
     res.status(200).json({ sum, count, result: result3 });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getMonthSum", error: e.message });
   }
 };
@@ -73,7 +73,7 @@ const getTodaySum = async (req, res) => {
     res.status(200).json({ sum, count, result: result3 });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getTodaySum", error: e.message });
   }
 };

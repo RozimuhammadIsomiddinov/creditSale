@@ -14,7 +14,7 @@ const getPaymentHistory = async (req, res) => {
     res.status(200).json({ result });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getPaymentHistory", error: e.message });
   }
 };
@@ -74,7 +74,7 @@ const addPaymentAmount = async (req, res) => {
     });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error while adding payment", error: e.message });
   }
 };
@@ -108,7 +108,7 @@ const updatePaymentAmount = async (req, res) => {
     });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error while updating payment", error: e.message });
   }
 };

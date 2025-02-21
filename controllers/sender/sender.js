@@ -54,7 +54,7 @@ const getByZone = async (req, res) => {
       fs.unlinkSync(filePath);
     });
   } catch (e) {
-    res.status(400).json({ message: "Error from getByZone", error: e.message });
+    res.status(500).json({ message: "Error from getByZone", error: e.message });
   }
 };
 module.exports = { getByZone };

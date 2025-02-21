@@ -21,7 +21,7 @@ const filterByZoneBoolean = async (req, res) => {
     return res.status(200).json(result);
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from filterByZoneBoolean", error: e.message });
   }
 };
@@ -47,7 +47,7 @@ const filterByZoneAndWorkplace = async (req, res) => {
 
     return res.status(200).json(result);
   } catch (e) {
-    res.status(400).json({
+    res.status(500).json({
       message: "Error from filterByZoneAndWorkplace",
       error: e.message,
     });

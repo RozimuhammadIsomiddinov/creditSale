@@ -14,7 +14,7 @@ const selectAllWorkplace = async (req, res) => {
     res.status(200).json(result);
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getAllWorkplace", error: e.message });
   }
 };
@@ -30,7 +30,7 @@ const selectByIDWorkplace = async (req, res) => {
     res.status(200).json(result[0]);
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getAllWorkplace", error: e.message });
   }
 };
@@ -51,7 +51,7 @@ const addWorkplace = async (req, res) => {
     });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from addWorkplace", error: e.message });
   }
 };
@@ -79,7 +79,7 @@ const updateWorkplace = async (req, res) => {
     });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from updateWorkplace", error: e.message });
   }
 };

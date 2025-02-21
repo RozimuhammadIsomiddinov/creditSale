@@ -9,7 +9,7 @@ const getAllCollector = async (req, res) => {
     res.status(200).json(result);
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getAllCollector", error: e.message });
   }
 };
@@ -30,7 +30,7 @@ const getByIdCollectorCont = async (req, res) => {
     });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getByIdCollectorCont", error: e.message });
   }
 };
@@ -41,7 +41,7 @@ const getCollectorMoney = async (req, res) => {
     return res.status(200).json({ result });
   } catch (e) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error from getCollectorMoney", error: e.message });
   }
 };
