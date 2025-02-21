@@ -114,6 +114,15 @@ const updateQuery = `
       RETURNING *;
 `;
 
+const searchQuery = `
+    SELECT * FROM users 
+  WHERE 
+    (LENGTH($1) > 1 AND to_tsvector('simple', name) @@ plainto_tsquery($1)) 
+    OR name ILIKE $1
+    OR phone_number = $2
+    OR id::TEXT = $3;
+
+`;
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
 const countAllUsers = async () => {
@@ -255,7 +264,17 @@ const deleteUser = async (id) => {
   }
 };
 
+const search = async (q) => {
+  try {
+    const values = [`%${q}%`, q, q];
+    const res = await pool.query(searchQuery, values);
+    return res.rows;
+  } catch (e) {
+    console.error("Error executing query by search", e.message);
+  }
+};
 module.exports = {
+  search,
   getAll,
   getById,
   createUser,

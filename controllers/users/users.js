@@ -9,6 +9,7 @@ const {
   deleteUser,
   countAllUsers,
   getByZoneWorkplace,
+  search,
 } = require("./model");
 
 const countUsers = async (req, res) => {
@@ -73,6 +74,7 @@ const getAllUsersZoneAndWorkplace = async (req, res) => {
     });
   }
 };
+
 const getByIdUser = async (req, res) => {
   const { id } = req.params;
   if (!id) {
@@ -257,6 +259,24 @@ const deleteUserByID = async (req, res) => {
   }
 };
 
+const searchPhoneNameID = async (req, res) => {
+  const { q } = req.params;
+  if (!q) {
+    return res.status(400).json({ error: "Query parameter is required" });
+  }
+
+  try {
+    const result = await search(q);
+    if (!result.length) return res.status(404).json({ message: "not found" });
+
+    return res.status(200).json(result);
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Error from searchPhoneNameID", error: e.message });
+  }
+};
+
 module.exports = {
   addUser,
   updateUser,
@@ -264,5 +284,6 @@ module.exports = {
   getAllUsers,
   getByIdUser,
   deleteUserByID,
+  searchPhoneNameID,
   getAllUsersZoneAndWorkplace,
 };
