@@ -8,10 +8,9 @@ const {
   deleteUserByID,
   getAllUsersZoneAndWorkplace,
   searchPhoneNameID,
+  getAllUsersZoneAndWorkplaceBoolean,
 } = require("../controllers/users/users");
-const {
-  filterByZoneAndWorkplace,
-} = require("../controllers/collector/page/filter");
+
 const router = express.Router();
 
 /**
@@ -309,7 +308,7 @@ router.get("/count", countUsers);
 router.get("/search/:q", searchPhoneNameID);
 router.get("/filter/:id", getAllUsers);
 router.post("/filter-workplace", getAllUsersZoneAndWorkplace);
-router.post("/filter", filterByZoneAndWorkplace);
+router.post("/filter", getAllUsersZoneAndWorkplaceBoolean);
 
 router.get("/:id", getByIdUser);
 router.post("/add", addUser);
