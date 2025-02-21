@@ -7,6 +7,7 @@ const {
   getByIdUser,
   deleteUserByID,
   getAllUsersZoneAndWorkplace,
+  searchPhoneNameID,
 } = require("../controllers/users/users");
 const {
   filterByZoneAndWorkplace,
@@ -65,6 +66,30 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Successfully retrieved user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/definitions/User'
+ *       400:
+ *         description: Invalid user ID
+ *       404:
+ *         description: User not found
+ *
+ * /users/search/{q}:
+ *   get:
+ *     summary: User search by phone,name and id
+ *     tags:
+ *       - Search
+ *     parameters:
+ *       - in: path
+ *         name: q
+ *         required: true
+ *         schema:
+ *          type: string
+ *         description: User search by phone,name and id
+ *     responses:
+ *       200:
+ *         description: Successfully search
  *         content:
  *           application/json:
  *             schema:
@@ -281,7 +306,7 @@ const router = express.Router();
  */
 
 router.get("/count", countUsers);
-
+router.get("/search/:q", searchPhoneNameID);
 router.get("/filter/:id", getAllUsers);
 router.post("/filter-workplace", getAllUsersZoneAndWorkplace);
 router.post("/filter", filterByZoneAndWorkplace);
