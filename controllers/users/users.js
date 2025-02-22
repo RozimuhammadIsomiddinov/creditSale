@@ -274,7 +274,7 @@ const deleteUserByID = async (req, res) => {
   try {
     const userExists = await getById(id);
 
-    if (userExists.length === 0) {
+    if (!userExists) {
       return res.status(404).json({ message: "User not found" });
     }
 
