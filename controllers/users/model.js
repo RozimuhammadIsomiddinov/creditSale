@@ -311,7 +311,7 @@ const updateModel = async (id, userData) => {
 const deleteUser = async (id) => {
   try {
     const res = await pool.query(deleteUserQuery, [id]);
-    return res.rowCount > 0;
+    return res.rowCount;
   } catch (e) {
     console.error("Error executing query by deleteUser", e.message);
   }
