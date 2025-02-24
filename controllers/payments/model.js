@@ -8,13 +8,14 @@ const paymentHistoryQuery = `
   zone.zone_name AS zone_name,
   collector.login AS login,
   p.payment_month,
+  p.payment_amount,
   p.payment_date,
   p.description
 FROM payment AS p
 JOIN zone ON p.zone_id = zone.id
 JOIN collector ON p.collector_id = collector.id
 
-  WHERE p.user_id = $1
+  WHERE p.user_id = $1;
 `;
 
 //boshqa oy uchun bo'lsa
