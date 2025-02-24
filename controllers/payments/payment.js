@@ -7,11 +7,11 @@ const getPaymentHistory = async (req, res) => {
   if (!id) return res.status(400).json({ message: "please send user's id" });
   try {
     const result = await paymentHistory(id);
-    if (result.length == 0)
+    /*  if (result.length == 0)
       return res
         .status(404)
-        .json({ message: "user's payment history has not" });
-    res.status(200).json({ result });
+        .json({ message: "user's payment history has not" });*/
+    res.status(200).json(result);
   } catch (e) {
     res
       .status(500)

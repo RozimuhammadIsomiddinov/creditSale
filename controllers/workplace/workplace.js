@@ -8,9 +8,9 @@ const {
 const selectAllWorkplace = async (req, res) => {
   try {
     const result = await getAllWorkplace();
-    if (result.length == 0) {
+    /*if (result.length == 0) {
       return res.status(404).json({ message: "Workplaces have not yet!" });
-    }
+    }*/
     res.status(200).json(result);
   } catch (e) {
     res
@@ -25,8 +25,8 @@ const selectByIDWorkplace = async (req, res) => {
 
   try {
     const result = await getByIdWorkplace(id);
-    if (result.length == 0)
-      return res.status(404).json({ message: "Workplace has not" });
+    /* if (result.length == 0)
+      return res.status(404).json({ message: "Workplace has not" });*/
     res.status(200).json(result[0]);
   } catch (e) {
     res
@@ -67,9 +67,9 @@ const updateWorkplace = async (req, res) => {
       .json({ message: "Please provide required Workplace_name." });
   try {
     const result1 = await getByIdWorkplace(id);
-    if (result1.length == 0)
+    /* if (result1.length == 0)
       return res.status(404).json({ message: "Workplace has not" });
-
+*/
     const result = await updatedWorkplace(id, workplace_name, description);
     if (!result) return res.status(400).json({ message: "unsuccesfully" });
 

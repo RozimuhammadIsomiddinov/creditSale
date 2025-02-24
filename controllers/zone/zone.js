@@ -12,19 +12,19 @@ const findZoneById = async (id, res) => {
     return null;
   }
   const result = await getByIdZones(id);
-  if (result.length === 0) {
+  /*if (result.length === 0) {
     res.status(404).json({ message: "zone has not" });
     return null;
-  }
+  }*/
   return result[0];
 };
 
 const getAllZone = async (req, res) => {
   try {
     const result = await getAll();
-    if (result.length === 0) {
+    /*  if (result.length === 0) {
       return res.status(404).json({ message: "zones have not yet" });
-    }
+    }*/
     res.status(200).json(result);
   } catch (e) {
     res
@@ -67,7 +67,7 @@ const addZone = async (req, res) => {
 const updateZone = async (req, res) => {
   try {
     const zone = await findZoneById(req.params.id, res);
-    if (!zone) return;
+    // if (!zone) return;
 
     const { zone_name, description } = req.body;
     if (!zone_name) {

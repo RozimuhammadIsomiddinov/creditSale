@@ -3,9 +3,9 @@ const { getAll, collectByCollector, getByIdCollector } = require("./model");
 const getAllCollector = async (req, res) => {
   try {
     const result = await getAll();
-    if (result.length == 0) {
+    /* if (result.length == 0) {
       return res.status(404).json({ message: "Collectors have not yet!" });
-    }
+    }*/
     res.status(200).json(result);
   } catch (e) {
     res
@@ -20,8 +20,8 @@ const getByIdCollectorCont = async (req, res) => {
   try {
     const result = await getByIdCollector(id);
 
-    if (result.length == 0)
-      return res.status(404).json({ message: "Collector has not" });
+    /* if (result.length == 0)
+      return res.status(404).json({ message: "Collector has not" });*/
     const { id: collector_id, login, createdat } = result[0];
     res.status(200).json({
       collector_id,

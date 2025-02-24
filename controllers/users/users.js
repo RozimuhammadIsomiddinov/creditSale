@@ -33,13 +33,13 @@ const getAllUsers = async (req, res) => {
     return res.status(400).json({ message: "Please send a page number" });
   }
   try {
-    const result1 = await getByIdZones(id);
+    /* const result1 = await getByIdZones(id);
     if (!result1) return res.status(400).json({ message: "zone has not" });
-
+*/
     const result = await getAll(id, page);
-    if (result.length === 0) {
+    /*  if (result.length === 0) {
       return res.status(404).json({ message: "No users found!" });
-    }
+    }*/
     res.status(200).json(result);
   } catch (e) {
     res
@@ -58,14 +58,14 @@ const getAllUsersZoneAndWorkplace = async (req, res) => {
     return res.status(400).json({ message: "Please send a page number" });
   }
   try {
-    const result1 = await getByIdZones(zone_id);
+    /*const result1 = await getByIdZones(zone_id);
     if (!result1.length)
       return res.status(404).json({ message: "zone not found" });
 
     const result2 = await getByIdWorkplace(workplace_id);
     if (!result2.length)
       return res.status(404).json({ message: "workplace not found" });
-
+*/
     const result = await getByZoneWorkplace(zone_id, workplace_id);
     return res.status(200).json(result);
   } catch (e) {
@@ -84,14 +84,14 @@ const getAllUsersZoneAndWorkplaceBoolean = async (req, res) => {
   if (!zone_id || !workplace_id)
     return res.status(400).json({ message: "send zone_id and workplace_id" });
   try {
-    const result1 = await getByIdZones(zone_id);
+    /*const result1 = await getByIdZones(zone_id);
     if (!result1.length)
       return res.status(404).json({ message: "zone not found" });
 
     const result2 = await getByIdWorkplace(workplace_id);
     if (!result2.length)
       return res.status(404).json({ message: "workplace not found" });
-
+*/
     const result = await getByZoneWorkplaceBoolean(
       zone_id,
       workplace_id,
@@ -114,9 +114,9 @@ const getByIdUser = async (req, res) => {
   }
   try {
     const result = await getById(id);
-    if (!result) {
+    /*  if (!result) {
       return res.status(404).json({ message: "User not found" });
-    }
+    }*/
     res.status(200).json(result);
   } catch (e) {
     res
@@ -158,14 +158,14 @@ const addUser = async (req, res) => {
   }
 
   try {
-    const zoneData = await getByIdZones(zone_id);
+    /* const zoneData = await getByIdZones(zone_id);
     const workplaceData = await getByIdWorkplace(workplace_id);
     if (!zoneData.length || !workplaceData) {
       return res
         .status(404)
         .json({ message: "Invalid zone  or workplace name" });
     }
-
+*/
     const newUser = await createUser({
       name,
       product_name,
@@ -228,14 +228,14 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    const zoneData = await getByIdZones(zone_id);
+    /* const zoneData = await getByIdZones(zone_id);
     const workplaceData = await getByIdWorkplace(workplace_id);
     if (!zoneData || !workplaceData) {
       return res
         .status(404)
         .json({ message: "Invalid zone or workplace name" });
     }
-
+*/
     const updatedUser = await updateModel(id, {
       name,
       product_name,
@@ -272,12 +272,12 @@ const deleteUserByID = async (req, res) => {
     return res.status(400).json({ message: "Please provide a user ID" });
   }
   try {
-    const userExists = await getById(id);
+    /* const userExists = await getById(id);
 
     if (!userExists) {
       return res.status(404).json({ message: "User not found" });
     }
-
+*/
     const deleteResult = await deleteUser(id);
     if (deleteResult !== 1) {
       return res.status(500).json({ message: "User deletion failed" });
@@ -299,7 +299,7 @@ const searchPhoneNameID = async (req, res) => {
 
   try {
     const result = await search(q);
-    if (!result.length) return res.status(404).json({ message: "not found" });
+    /* if (!result.length) return res.status(404).json({ message: "not found" });*/
 
     return res.status(200).json(result);
   } catch (e) {
