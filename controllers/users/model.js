@@ -162,7 +162,7 @@ const countAllUsers = async () => {
   }
 };
 
-const getAll = async (id, page = 1, limit = 200) => {
+const getAll = async (id, page = 1, limit = 5) => {
   try {
     const offset = (page - 1) * limit;
     const res = await pool.query(selectAllByZone, [id, limit, offset]);
@@ -176,7 +176,7 @@ const getByZoneWorkplace = async (
   zone_id,
   workplace_id,
   page = 1,
-  limit = 200
+  limit = 5
 ) => {
   const offset = (page - 1) * limit;
 
@@ -198,7 +198,7 @@ const getByZoneWorkplaceBoolean = async (
   workplace_id,
   payment_status,
   page = 1,
-  limit = 200
+  limit = 5
 ) => {
   const offset = (page - 1) * limit;
   try {
