@@ -3,6 +3,7 @@ const {
   getAllCollector,
   getCollectorMoney,
   getByIdCollectorCont,
+  getCollectorMoneyDay,
 } = require("../controllers/collector/collector");
 const { loginCollector } = require("../controllers/collector/page/login.js");
 const { auth } = require("../middleware/auth");
@@ -126,7 +127,20 @@ const router = express.Router();
  * @swagger
  * /collector/all-money:
  *   get:
- *     summary: Get total money collected
+ *     summary: Get total money collected on month
+ *     tags: [Collectors]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved collected money
+ *       400:
+ *         description: Error occurred while fetching data
+ */
+
+/**
+ * @swagger
+ * /collector/all-money-daily:
+ *   get:
+ *     summary: Get total money collected on day
  *     tags: [Collectors]
  *     responses:
  *       200:
@@ -228,6 +242,7 @@ const router = express.Router();
 router.get("/", getAllCollector);
 router.get("/statistic/:id", selectThisOldMonthByID);
 router.get("/all-money", getCollectorMoney);
+router.get("/all-money-daily", getCollectorMoneyDay);
 router.get("/:id", getByIdCollectorCont);
 router.post("/login", loginCollector);
 

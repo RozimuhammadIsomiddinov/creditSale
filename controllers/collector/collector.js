@@ -1,4 +1,9 @@
-const { getAll, collectByCollector, getByIdCollector } = require("./model");
+const {
+  getAll,
+  collectByCollector,
+  getByIdCollector,
+  collectByCollectorDay,
+} = require("./model");
 
 const getAllCollector = async (req, res) => {
   try {
@@ -45,8 +50,20 @@ const getCollectorMoney = async (req, res) => {
       .json({ message: "Error from getCollectorMoney", error: e.message });
   }
 };
+
+const getCollectorMoneyDay = async (req, res) => {
+  try {
+    const result = await collectByCollectorDay();
+    return res.status(200).json(result);
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Error from getCollectorMoneyDay", error: e.message });
+  }
+};
 module.exports = {
   getAllCollector,
-  getByIdCollectorCont,
   getCollectorMoney,
+  getCollectorMoneyDay,
+  getByIdCollectorCont,
 };

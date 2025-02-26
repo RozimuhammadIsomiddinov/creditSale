@@ -37,7 +37,22 @@ WHERE p.payment_date >= DATE_TRUNC('month', NOW())
 GROUP BY z.zone_name, c.login, c.id, month
 ORDER BY month DESC, total_collected DESC;
 `;
+const collectorByCollectDay = `
+    SELECT 
+        z.zone_name, 
+        c.login,
+        c.id,
+        DATE_TRUNC('day', p.payment_date) AS day, -- Bugungi kunni olish
+        SUM(p.payment_amount) AS total_collected,
+        COUNT(*) AS total_payments  -- Nechta to'lov qilinganligi
+    FROM payment p
+    JOIN collector c ON p.collector_id = c.id
+    JOIN zone z ON p.zone_id = z.id
+    WHERE p.payment_date >= CURRENT_DATE  -- Bugungi kunga tegishli tolovlar
+    GROUP BY z.zone_name, c.login, c.id, day
+    ORDER BY day DESC, total_collected DESC;
 
+`;
 const thisMonthCollect = `
     SELECT
     zone.zone_name AS zon_name,
@@ -135,6 +150,14 @@ const collectByCollector = async () => {
   }
 };
 
+const collectByCollectorDay = async () => {
+  try {
+    const res = await pool.query(collectorByCollectDay);
+    return res.rows;
+  } catch (e) {
+    console.error("Error executing query in collectByCollectorDay", e.message);
+  }
+};
 const createCollector = async () => {
   const collectors = [
     { login: "aziz", password: "aziz70" },
@@ -171,4 +194,5 @@ module.exports = {
   getByIdCollector,
   getByNameCollector,
   collectByCollector,
+  collectByCollectorDay,
 };
