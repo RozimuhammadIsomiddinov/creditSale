@@ -38,7 +38,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://creditsale.uz",
+        url: "http://localhost:7045",
       },
     ],
   },

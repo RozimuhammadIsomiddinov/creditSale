@@ -137,6 +137,19 @@ const paymentHistory = async (id) => {
   }
 };
 
+const maxPayment = async (id) => {
+  try {
+    const { rows } = await pool.query(paymentHistoryQuery, [id]);
+    const maxItems = rows.map((a) => a.id);
+    const maxNumber = Math.max(...maxItems);
+    const res = await pool.query("select * from payment where id = $1", [
+      maxNumber,
+    ]);
+    return res.rows[0].payment_amount;
+  } catch (e) {
+    console.error("Error executing query by maxPayment", e.message);
+  }
+};
 //id payment historyniki
 const updatePaymentHistory = async (id, newAmount, newMonth) => {
   const client = await pool.connect();
@@ -179,4 +192,9 @@ const updatePaymentHistory = async (id, newAmount, newMonth) => {
   }
 };
 
-module.exports = { addPayment, paymentHistory, updatePaymentHistory };
+module.exports = {
+  addPayment,
+  paymentHistory,
+  updatePaymentHistory,
+  maxPayment,
+};
