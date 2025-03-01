@@ -1,4 +1,5 @@
 const { logger } = require("../../logs/log");
+const { maxPayment } = require("../payments/model");
 const { getByIdWorkplace } = require("../workplace/model");
 const { getByIdZones } = require("../zone/model");
 const {

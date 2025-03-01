@@ -19,12 +19,21 @@ const selectAllByZone = `SELECT
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
-FROM users
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
+FROM users 
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-  WHERE users.zone = $1
- LIMIT $2 OFFSET $3;`;
+LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
+WHERE users.zone = $1 
+AND users.payment_status = TRUE
+LIMIT $2 OFFSET $3;
+`;
 const selectAllByZoneAndWorkplace = `
 SELECT 
     users.id,
