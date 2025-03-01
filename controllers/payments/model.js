@@ -136,7 +136,7 @@ const paymentHistory = async (id) => {
     console.error("Error executing query by paymentHistory", e.message);
   }
 };
-
+/*
 const maxPayment = async (id) => {
   try {
     const { rows } = await pool.query(paymentHistoryQuery, [id]);
@@ -150,6 +150,7 @@ const maxPayment = async (id) => {
     console.error("Error executing query by maxPayment", e.message);
   }
 };
+*/
 //id payment historyniki
 const updatePaymentHistory = async (id, newAmount, newMonth) => {
   const client = await pool.connect();
@@ -196,5 +197,5 @@ module.exports = {
   addPayment,
   paymentHistory,
   updatePaymentHistory,
-  maxPayment,
+  // maxPayment,
 };
