@@ -73,7 +73,15 @@ const countMonthQuery = `
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
-  SELECT DISTINCT ON (user_id)
+ WITH last_payments AS (
+    SELECT DISTINCT ON (user_id) 
+        user_id, 
+        payment_amount, 
+        payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+)
+SELECT DISTINCT ON (users.id)
     users.id,
     users.name,
     users.product_name,
@@ -91,19 +99,16 @@ const selectMonthQuery = `
     users.description,
     users.given_day,
     users.updatedat,
-    COALESCE(p.payment_amount, 0) AS last_payment_amount,
-    p.payment_date AS last_payment_date
+    COALESCE(lp.payment_amount, 0) AS last_payment_amount,
+    lp.payment_date AS last_payment_date
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-JOIN payment p ON users.id = p.user_id 
-LEFT JOIN (
-    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
-    FROM payment
-    ORDER BY user_id, payment_date DESC
-) p ON users.id = p.user_id
-WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
-ORDER BY user_id, updatedat DESC;
+LEFT JOIN last_payments lp ON users.id = lp.user_id
+WHERE lp.payment_date IS NULL 
+   OR DATE_TRUNC('month', lp.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
+ORDER BY users.id, users.updatedat DESC;
+
 `;
 //4.
 // bugun to'laganlar
