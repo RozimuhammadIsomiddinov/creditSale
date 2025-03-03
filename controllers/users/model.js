@@ -220,7 +220,7 @@ const countAllUsers = async () => {
   }
 };
 
-const getAll = async (id, page = 1, limit = 5) => {
+const getAll = async (id, page = 1, limit = 7) => {
   try {
     const offset = (page - 1) * limit;
     const res = await pool.query(selectAllByZone, [id, limit, offset]);
