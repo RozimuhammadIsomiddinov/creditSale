@@ -159,14 +159,14 @@ const addUser = async (req, res) => {
   }
 
   try {
-    /* const zoneData = await getByIdZones(zone_id);
+    const zoneData = await getByIdZones(zone_id);
     const workplaceData = await getByIdWorkplace(workplace_id);
     if (!zoneData.length || !workplaceData) {
       return res
         .status(404)
         .json({ message: "Invalid zone  or workplace name" });
     }
-*/
+
     const newUser = await createUser({
       name,
       product_name,
