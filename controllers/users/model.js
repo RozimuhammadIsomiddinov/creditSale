@@ -31,7 +31,6 @@ LEFT JOIN (
     ORDER BY user_id, payment_date DESC
 ) p ON users.id = p.user_id
 WHERE users.zone = $1 
-AND users.payment_status = TRUE
 LIMIT $2 OFFSET $3;
 `;
 
