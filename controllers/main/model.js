@@ -39,10 +39,17 @@ const selectNotPayedUsersQuery = `
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
   FROM users
   JOIN zone ON users.zone = zone.id
   JOIN workplace ON users.workplace = workplace.id
+  LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
    WHERE payment_status = false LIMIT $1 OFFSET $2;
 `;
 
@@ -83,11 +90,18 @@ const selectMonthQuery = `
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-JOIN payment p ON users.id = p.user_id  -- payment jadvali bilan ulanish
+JOIN payment p ON users.id = p.user_id 
+LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
 WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
 ORDER BY user_id, updatedat DESC;
 `;
@@ -123,11 +137,18 @@ SELECT DISTINCT ON (user_id)
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-JOIN payment p ON users.id = p.user_id  -- payment jadvali bilan ulanish
+JOIN payment p ON users.id = p.user_id 
+LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
     WHERE DATE(p.payment_date) = CURRENT_DATE
     ORDER BY user_id, updatedat DESC;
 

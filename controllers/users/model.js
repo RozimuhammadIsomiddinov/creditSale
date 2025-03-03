@@ -34,6 +34,7 @@ WHERE users.zone = $1
 AND users.payment_status = TRUE
 LIMIT $2 OFFSET $3;
 `;
+
 const selectAllByZoneAndWorkplace = `
 SELECT 
     users.id,
@@ -172,13 +173,41 @@ const updateQuery = `
 `;
 
 const searchQuery = `
-    SELECT * FROM users 
-  WHERE 
-    (LENGTH($1) > 1 AND to_tsvector('simple', name) @@ plainto_tsquery($1)) 
-    OR name ILIKE $1
-    OR phone_number = $2
-    OR id::TEXT = $3;
-
+  SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
+FROM users
+JOIN zone ON users.zone = zone.id
+JOIN workplace ON users.workplace = workplace.id
+JOIN payment ON payment.user_id = users.id 
+JOIN collector ON payment.collector_id = collector.id 
+LEFT JOIN (
+    SELECT DISTINCT ON (payment.user_id) payment.user_id, payment.payment_amount, payment.payment_date
+    FROM payment
+    ORDER BY payment.user_id, payment.payment_date DESC
+) p ON users.id = p.user_id
+WHERE 
+    (LENGTH($1) > 1 AND to_tsvector('simple', users.name) @@ plainto_tsquery($1)) 
+    OR users.name ILIKE $1
+    OR users.phone_number = $2
+    OR users.id::TEXT = $3;
 `;
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 

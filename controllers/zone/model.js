@@ -26,12 +26,19 @@ const selectByCollectorStats = `
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
 JOIN payment  ON payment.user_id = users.id 
 JOIN collector ON payment.collector_id = collector.id 
+LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
 WHERE collector.id = $1 
  LIMIT $2 OFFSET $3;
 `;
@@ -54,12 +61,19 @@ const selectByZoneAndWorkplace = `
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
   FROM users
   JOIN zone ON users.zone = zone.id
   JOIN workplace ON users.workplace = workplace.id
   JOIN payment  ON payment.user_id = users.id 
   JOIN collector ON payment.collector_id = collector.id
+  LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
    WHERE payment.payment_date >= DATE_TRUNC('month', NOW())
    AND collector.id = $1 AND zone.id = $2 
       LIMIT $3 OFFSET $4;

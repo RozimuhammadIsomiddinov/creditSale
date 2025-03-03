@@ -182,11 +182,11 @@ const router = express.Router();
  *       phone_number2:
  *         type: string
  *       workplace_id:
- *         type: string
+ *         type: number
  *       time:
  *         type: number
  *       zone_id:
- *         type: string
+ *         type: number
  *       seller:
  *         type: string
  *       passport_series:
