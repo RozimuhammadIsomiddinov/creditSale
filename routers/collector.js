@@ -4,6 +4,7 @@ const {
   getCollectorMoney,
   getByIdCollectorCont,
   getCollectorMoneyDay,
+  getCollectorDaily,
 } = require("../controllers/collector/collector");
 const { loginCollector } = require("../controllers/collector/page/login.js");
 const { auth } = require("../middleware/auth");
@@ -243,6 +244,7 @@ router.get("/", getAllCollector);
 router.get("/statistic/:id", selectThisOldMonthByID);
 router.get("/all-money", getCollectorMoney);
 router.get("/all-money-daily", getCollectorMoneyDay);
+router.get("/all-money-daily-by-collector/:id", getCollectorDaily);
 router.get("/:id", getByIdCollectorCont);
 router.post("/login", loginCollector);
 

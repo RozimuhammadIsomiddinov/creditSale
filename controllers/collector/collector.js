@@ -3,6 +3,7 @@ const {
   collectByCollector,
   getByIdCollector,
   collectByCollectorDay,
+  collectByCollectorID,
 } = require("./model");
 
 const getAllCollector = async (req, res) => {
@@ -61,9 +62,23 @@ const getCollectorMoneyDay = async (req, res) => {
       .json({ message: "Error from getCollectorMoneyDay", error: e.message });
   }
 };
+
+const getCollectorDaily = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await collectByCollectorID(id);
+    return res.status(200).json(result);
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Error from getCollectorDaily", error: e.message });
+  }
+};
 module.exports = {
   getAllCollector,
   getCollectorMoney,
   getCollectorMoneyDay,
+  getCollectorDaily,
   getByIdCollectorCont,
 };
