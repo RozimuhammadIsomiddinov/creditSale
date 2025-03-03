@@ -73,15 +73,7 @@ const countMonthQuery = `
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
-WITH last_payments AS (
-    SELECT DISTINCT ON (user_id) 
-        user_id, 
-        payment_amount, 
-        payment_date
-    FROM payment
-    ORDER BY user_id, payment_date DESC
-)
-SELECT DISTINCT ON (users.id)
+SELECT DISTINCT ON (user_id)
     users.id,
     users.name,
     users.product_name,
@@ -99,18 +91,14 @@ SELECT DISTINCT ON (users.id)
     users.description,
     users.given_day,
     users.updatedat,
-    COALESCE(lp.payment_amount, 0) AS last_payment_amount,
-    lp.payment_date AS last_payment_date
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-LEFT JOIN last_payments lp ON users.id = lp.user_id
-WHERE (users.payment_status IS NULL OR users.payment_status != FALSE)  
-AND (lp.payment_date IS NULL 
-    OR DATE_TRUNC('month', lp.payment_date) = DATE_TRUNC('month', CURRENT_DATE))
-ORDER BY users.id, users.updatedat DESC;
-
-
+JOIN payment AS p ON users.id = p.user_id 
+    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE)
+    ORDER BY user_id, updatedat DESC;
 `;
 //4.
 // bugun to'laganlar
@@ -150,7 +138,7 @@ SELECT DISTINCT ON (user_id)
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
-JOIN payment p ON users.id = p.user_id 
+JOIN payment AS p ON users.id = p.user_id 
 LEFT JOIN (
     SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
     FROM payment
