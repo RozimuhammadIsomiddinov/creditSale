@@ -183,7 +183,7 @@ const addUser = async (req, res) => {
     });
 
     if (!newUser) {
-      return res.status(500).json({ message: "User creation failed" });
+      return res.status(500).json({ message: "User creation failed", newUser});
     }
 
     logger.info("New user added:", newUser);
