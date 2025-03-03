@@ -52,10 +52,17 @@ SELECT
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
+LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
   WHERE users.zone = $1 AND users.workplace = $2
  LIMIT $3 OFFSET $4;
 `;
@@ -78,10 +85,17 @@ SELECT
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
 FROM users
 JOIN zone ON users.zone = zone.id
 JOIN workplace ON users.workplace = workplace.id
+LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
   WHERE users.zone = $1 AND users.workplace = $2 AND users.payment_status = $3
  LIMIT $4 OFFSET $5;
 `;
@@ -103,10 +117,17 @@ const selectByIdQuery = `SELECT
     users.passport_series,
     users.description,
     users.given_day,
-    users.updatedat
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
   FROM users
   JOIN zone ON users.zone = zone.id
   JOIN workplace ON users.workplace = workplace.id
+  LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
    WHERE users.id = $1;`;
 
 const create = `
