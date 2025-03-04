@@ -30,6 +30,7 @@ const paymentHistoryQuery = `
   p.payment_month,
   p.payment_amount,
   p.payment_date,
+  p.updated_at,
   p.description
 FROM payment AS p
 JOIN zone ON p.zone_id = zone.id
