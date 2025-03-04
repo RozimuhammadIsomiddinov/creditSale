@@ -100,12 +100,13 @@ LEFT JOIN LATERAL (
     SELECT p.payment_amount, p.payment_date 
     FROM payment p 
     WHERE p.user_id = u.id 
-    AND p.payment_date >= DATE_TRUNC('month', NOW()) -- Faqat joriy oyda to'lov qilganlar
+    AND DATE(p.payment_date) >= DATE_TRUNC('month', CURRENT_DATE)  -- Sana faqat yil-oy-kun formatida tekshiriladi
     ORDER BY p.payment_date DESC 
     LIMIT 1
 ) p ON true
 WHERE u.payment_status = true
 ORDER BY u.id, u.updatedat DESC;
+
 `;
 //4.
 // bugun to'laganlar
