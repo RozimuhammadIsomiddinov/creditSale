@@ -73,7 +73,7 @@ const countMonthQuery = `
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
-SELECT DISTINCT ON (u.id)
+SELECT 
     u.id,
     u.name,
     u.product_name,
@@ -122,9 +122,42 @@ const countDayQuery = `
     FROM payment AS p
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
-const selectDayQuery = `SELECT * 
-FROM payment AS p
-WHERE DATE(p.payment_date) = CURRENT_DATE;`;
+const selectDayQuery = `
+SELECT
+    u.id,
+    u.name,
+    u.product_name,
+    u.cost,
+    u.phone_number,
+    u.phone_number2,
+    u.time,
+    u.seller,
+    z.zone_name AS zone_name,  
+    w.workplace_name AS workplace_name, 
+    u.payment_status,
+    u.monthly_income,
+    u.payment,
+    u.passport_series,
+    u.description,
+    u.given_day,
+    u.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date
+FROM users u
+JOIN zone z ON u.zone = z.id
+JOIN workplace w ON u.workplace = w.id
+LEFT JOIN LATERAL (
+    SELECT p.payment_amount, p.payment_date 
+    FROM payment p 
+    WHERE p.user_id = u.id 
+    AND DATE(p.payment_date) >= DATE_TRUNC('month', CURRENT_DATE)  -- Sana faqat yil-oy-kun formatida tekshiriladi
+    ORDER BY p.payment_date DESC 
+    LIMIT 1
+) p ON true
+WHERE u.payment_status = true
+ORDER BY u.id, u.updatedat DESC;
+
+`;
 //1.
 const selectIncome = async () => {
   try {
