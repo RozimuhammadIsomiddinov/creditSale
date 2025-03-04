@@ -184,7 +184,7 @@ const payedCountUsers = async () => {
 };
 
 //2.
-const notPayedUsers = async (page = 1, limit = 20) => {
+const notPayedUsers = async (page = 1, limit = 2000) => {
   const offset = (page - 1) * limit;
 
   try {

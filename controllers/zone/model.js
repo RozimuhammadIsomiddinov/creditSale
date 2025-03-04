@@ -173,7 +173,7 @@ const getByName = async (zone_name) => {
   }
 };
 
-const getByZoneBool = async (id, page = 1, limit = 5) => {
+const getByZoneBool = async (id, page = 1, limit = 2000) => {
   const offset = (page - 1) * limit;
 
   try {
@@ -184,7 +184,7 @@ const getByZoneBool = async (id, page = 1, limit = 5) => {
   }
 };
 
-const getByZoneAndWorkplace = async (id, zone_id, page = 1, limit = 5) => {
+const getByZoneAndWorkplace = async (id, zone_id, page = 1, limit = 2000) => {
   const offset = (page - 1) * limit;
 
   try {
