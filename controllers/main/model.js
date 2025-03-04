@@ -61,19 +61,21 @@ const notPayedUsersQuery = `
 //3.
 //bu oy qancha to'laganlar
 const sumMonthQuery = `
-    SELECT SUM(payment_amount) 
-    FROM payment AS p
-    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
+  SELECT SUM(payment_amount) 
+FROM payment AS p
+WHERE p.payment_date >= DATE_TRUNC('month', CURRENT_DATE) 
+  AND p.payment_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month';
 `;
 
 const countMonthQuery = `
-  SELECT COUNT(*) 
-    FROM payment AS p
-    WHERE DATE_TRUNC('month', p.payment_date) = DATE_TRUNC('month', CURRENT_DATE);
+ SELECT COUNT(*) 
+FROM payment AS p
+WHERE p.payment_date >= DATE_TRUNC('month', CURRENT_DATE) 
+  AND p.payment_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month';
 `;
 // bu oy to'laganlar ro'yhati
 const selectMonthQuery = `
-SELECT 
+SELECT DISTINCT ON (u.id)
     u.id,
     u.name,
     u.product_name,
@@ -100,11 +102,14 @@ LEFT JOIN LATERAL (
     SELECT p.payment_amount, p.payment_date 
     FROM payment p 
     WHERE p.user_id = u.id 
+    AND p.payment_date >= DATE_TRUNC('month', CURRENT_DATE) 
+    AND p.payment_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
     ORDER BY p.payment_date DESC 
     LIMIT 1
-) p ON true  -- Eng oxirgi tolovni olish uchun
+) p ON true  
 WHERE u.payment_status = true
 ORDER BY u.id, u.updatedat DESC;
+
 `;
 //4.
 // bugun to'laganlar
