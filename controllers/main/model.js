@@ -121,41 +121,40 @@ const countDayQuery = `
     FROM payment AS p
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
-const selectDayQuery = `
-WITH last_payment AS (
+const selectDayQuery = `WITH last_payment AS (
     SELECT DISTINCT ON (user_id) 
         user_id, 
         payment_amount, 
         payment_date
     FROM payment
-    WHERE DATE(payment_date) = CURRENT_DATE  -- Faqat bugungi to‘lovlarni olish
+    WHERE payment_date::DATE = CURRENT_DATE  -- Bugungi tolovlarni olish
     ORDER BY user_id, payment_date DESC
 )
-SELECT DISTINCT ON (u.id)
-    u.id,
-    u.name,
-    u.product_name,
-    u.cost,
-    u.phone_number,
-    u.phone_number2,
-    u.time,
-    u.seller,
-    z.zone_name AS zone_name,  
-    w.workplace_name AS workplace_name, 
-    u.payment_status,
-    u.monthly_income,
-    u.payment,
-    u.passport_series,
-    u.description,
-    u.given_day,
-    u.updatedat,
-    COALESCE(lp.payment_amount, 0) AS last_payment_amount,
-    lp.payment_date AS last_payment_date
+SELECT u.id,
+       u.name,
+       u.product_name,
+       u.cost,
+       u.phone_number,
+       u.phone_number2,
+       u.time,
+       u.seller,
+       z.zone_name AS zone_name,  
+       w.workplace_name AS workplace_name, 
+       u.payment_status,
+       u.monthly_income,
+       u.payment,
+       u.passport_series,
+       u.description,
+       u.given_day,
+       u.updatedat,
+       COALESCE(lp.payment_amount, 0) AS last_payment_amount,
+       lp.payment_date AS last_payment_date
 FROM users u
 JOIN zone z ON u.zone = z.id
 JOIN workplace w ON u.workplace = w.id
 LEFT JOIN last_payment lp ON u.id = lp.user_id
-ORDER BY u.id, u.updatedat DESC;
+ORDER BY u.updatedat DESC;
+
   `;
 //1.
 const selectIncome = async () => {
