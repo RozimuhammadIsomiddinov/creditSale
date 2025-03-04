@@ -101,9 +101,7 @@ LEFT JOIN LATERAL (
     SELECT p.payment_amount, p.payment_date 
     FROM payment p 
     WHERE p.user_id = u.id 
-    AND p.payment_date >= DATE_TRUNC('month', CURRENT_DATE) 
-    AND p.payment_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
-    ORDER BY p.payment_date DESC  
+    ORDER BY p.payment_date DESC  -- Eng oxirgi tolovni olish
     LIMIT 1
 ) p ON true  
 WHERE u.payment_status = true
