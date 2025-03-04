@@ -100,12 +100,12 @@ LEFT JOIN LATERAL (
     SELECT p.payment_amount, p.payment_date 
     FROM payment p 
     WHERE p.user_id = u.id 
+    AND p.payment_date >= DATE_TRUNC('month', NOW()) -- Faqat joriy oyda to'lov qilganlar
     ORDER BY p.payment_date DESC 
     LIMIT 1
 ) p ON true
 WHERE u.payment_status = true
 ORDER BY u.id, u.updatedat DESC;
-
 `;
 //4.
 // bugun to'laganlar
@@ -121,13 +121,14 @@ const countDayQuery = `
     FROM payment AS p
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
-const selectDayQuery = `WITH last_payment AS (
+const selectDayQuery = `
+WITH last_payment AS (
     SELECT DISTINCT ON (user_id) 
         user_id, 
         payment_amount, 
         payment_date
     FROM payment
-    WHERE payment_date::DATE = CURRENT_DATE  -- Bugungi tolovlarni olish
+    WHERE payment_date::DATE = CURRENT_DATE  -- Bugungi to'lovlarni olish
     ORDER BY user_id, payment_date DESC
 )
 SELECT u.id,
@@ -152,7 +153,7 @@ SELECT u.id,
 FROM users u
 JOIN zone z ON u.zone = z.id
 JOIN workplace w ON u.workplace = w.id
-LEFT JOIN last_payment lp ON u.id = lp.user_id
+JOIN last_payment lp ON u.id = lp.user_id  -- INNER JOIN faqat bugun to'lov qilganlarni olish uchun
 ORDER BY u.updatedat DESC;
 
   `;
