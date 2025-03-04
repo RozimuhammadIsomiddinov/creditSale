@@ -74,8 +74,7 @@ WHERE p.payment_date >= DATE_TRUNC('month', CURRENT_DATE)
   AND p.payment_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month';
 `;
 // bu oy to'laganlar ro'yhati
-const selectMonthQuery = `
-SELECT DISTINCT ON (u.id)
+const selectMonthQuery = `SELECT DISTINCT ON (u.id)
     u.id,
     u.name,
     u.product_name,
@@ -104,7 +103,7 @@ LEFT JOIN LATERAL (
     WHERE p.user_id = u.id 
     AND p.payment_date >= DATE_TRUNC('month', CURRENT_DATE) 
     AND p.payment_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
-    ORDER BY p.payment_date DESC 
+    ORDER BY p.payment_date DESC  
     LIMIT 1
 ) p ON true  
 WHERE u.payment_status = true
