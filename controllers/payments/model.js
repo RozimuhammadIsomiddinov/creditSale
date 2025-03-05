@@ -40,7 +40,7 @@ const insertPaymentOld = `
 const updateUserPaymentQuery = `
     UPDATE users
 SET 
-    payment = users.payment + $1, 
+    payment = payment + $1, 
     payment_status = CASE 
         WHEN payment_status = false THEN true 
         ELSE payment_status 
