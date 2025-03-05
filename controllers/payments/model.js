@@ -39,10 +39,15 @@ const insertPaymentOld = `
 //agar bu oy uchun bo'lsa
 const updateUserPaymentQuery = `
     UPDATE users
-    SET payment = payment + $1,
-        payment_status = true
-    WHERE id = $2
-    RETURNING *;
+SET 
+    payment = users.payment + $1, 
+    payment_status = CASE 
+        WHEN payment_status = false THEN true 
+        ELSE payment_status 
+    END
+WHERE id = $2
+RETURNING *;
+
 `;
 //agar boshqa oy uchun bo'lsa
 const updateUserPaymentOld = `
