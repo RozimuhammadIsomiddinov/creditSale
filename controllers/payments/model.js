@@ -90,16 +90,10 @@ const addPayment = async (
       description,
     ]);
 
-    if (type) {
-      var updatedUser = await client.query(updateUserPaymentQuery, [
-        paymentAmount,
-        user_id,
-      ]);
-    }
-    updatedUser = await client.query(updateUserPaymentOld, [
-      paymentAmount,
-      user_id,
-    ]);
+    const updatedUser = await client.query(
+      type == true ? updateUserPaymentQuery : updateUserPaymentOld,
+      [paymentAmount, user_id]
+    );
 
     await client.query("COMMIT");
     return {
