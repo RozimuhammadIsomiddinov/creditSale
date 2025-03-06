@@ -72,7 +72,7 @@ const out_recycle = async (id) => {
 
 const select_recycle_users = async (params) => {
   try {
-    const { rows } = pool.query(select_recycle_usersQuery);
+    const { rows } = await pool.query(select_recycle_usersQuery);
     return rows;
   } catch (e) {
     console.error("Error executing query in select_recycle_users", e.message);
