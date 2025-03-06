@@ -106,7 +106,6 @@ LEFT JOIN LATERAL (
 ) p ON true  
 WHERE u.payment_status = true
 ORDER BY u.id, u.updatedat DESC;
-
 `;
 //4.
 // bugun to'laganlar
