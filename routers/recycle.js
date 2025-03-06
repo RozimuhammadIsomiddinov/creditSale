@@ -2,12 +2,23 @@ const express = require("express");
 const {
   put_recycle,
   delete_recycle,
+  get_recycle,
 } = require("../controllers/recycle/recycle");
 
 const router = express.Router();
 
 /**
  * @swagger
+ *  /recycle:
+ *   get:
+ *     tags:
+ *       - Recycle
+ *     parameters:
+ *     responses:
+ *       200:
+ *         description: User successfully get from recycle
+ *       500:
+ *         description: Server error
  * /recycle/to/{id}:
  *   put:
  *     tags:
@@ -47,6 +58,7 @@ const router = express.Router();
  *         description: Server error
  */
 
+router.get("/", get_recycle);
 router.put("/to/:id", put_recycle);
 router.delete("/out/:id", delete_recycle);
 

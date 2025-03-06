@@ -20,7 +20,38 @@ END
 WHERE id = $1
 RETURNING *;
 `;
-
+const select_recycle_usersQuery = `
+  SELECT 
+    users.id,
+    users.name,
+    users.product_name,
+    users.cost,
+    users.phone_number,
+    users.phone_number2,
+    users.time,
+    users.seller,
+    zone.zone_name AS zone_name,  
+    workplace.workplace_name AS workplace_name, 
+    users.payment_status,
+    users.monthly_income,
+    users.payment,
+    users.passport_series,
+    users.description,
+    users.given_day,
+    users.recycle,
+    users.updatedat,
+    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    p.payment_date AS last_payment_date 
+  FROM users
+  JOIN zone ON users.zone = zone.id
+  JOIN workplace ON users.workplace = workplace.id
+  LEFT JOIN (
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    FROM payment
+    ORDER BY user_id, payment_date DESC
+) p ON users.id = p.user_id
+   WHERE users.recycle = true;
+`;
 const to_recycle = async (id) => {
   try {
     const { rows } = await pool.query(to_recycleQuery, [id]);
@@ -39,4 +70,12 @@ const out_recycle = async (id) => {
   }
 };
 
-module.exports = { to_recycle, out_recycle };
+const select_recycle_users = async (params) => {
+  try {
+    const { rows } = pool.query(select_recycle_usersQuery);
+    return rows;
+  } catch (e) {
+    console.error("Error executing query in select_recycle_users", e.message);
+  }
+};
+module.exports = { to_recycle, out_recycle, select_recycle_users };
