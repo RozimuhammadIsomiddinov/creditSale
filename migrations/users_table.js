@@ -18,6 +18,7 @@ const createUsersTable = async () => {
       payment INTEGER DEFAULT 0,  
       passport_series VARCHAR(20),
       description VARCHAR(500),
+      recycle BOOLEAN DEFAULT FALSE,
       given_day TIMESTAMP DEFAULT NOW(), 
       updatedAt TIMESTAMP DEFAULT NOW()
     );

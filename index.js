@@ -11,7 +11,7 @@ const routerZone = require("./routers/zones");
 const routerCollector = require("./routers/collector");
 const routerMain = require("./routers/main");
 const routerAdmin = require("./routers/admin");
-
+const routerRecycle = require("./routers/recycle.js");
 const { getByZone } = require("./controllers/sender/sender");
 
 const app = express();
@@ -55,6 +55,7 @@ app.use("/payment", routerPayment);
 app.use("/users", routerUsers);
 app.use("/workplace", routerWorkplace);
 app.use("/zone", routerZone);
+app.use("/recycle", routerRecycle);
 app.get("/excel-download", getByZone);
 
 app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
