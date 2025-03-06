@@ -117,6 +117,7 @@ const selectByIdQuery = `SELECT
     users.passport_series,
     users.description,
     users.given_day,
+    users.recycle,
     users.updatedat,
     COALESCE(p.payment_amount, 0) AS last_payment_amount,
     p.payment_date AS last_payment_date 
