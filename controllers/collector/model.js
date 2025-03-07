@@ -48,7 +48,7 @@ const collectorByCollectDay = `
     FROM payment p
     JOIN collector c ON p.collector_id = c.id
     JOIN zone z ON p.zone_id = z.id
-    WHERE p.payment_date >= CURRENT_DATE  -- Bugungi kunga tegishli tolovlar
+    WHERE p.payment_date = CURRENT_DATE  -- Bugungi kunga tegishli tolovlar
     GROUP BY z.zone_name, c.login, c.id, day
     ORDER BY day DESC, total_collected DESC;
 `;
@@ -63,7 +63,7 @@ const collectByCollectorIDquery = `
     FROM payment p
     JOIN collector c ON p.collector_id = c.id
     JOIN zone z ON p.zone_id = z.id
-    WHERE p.payment_date >= CURRENT_DATE  -- Bugungi kunga tegishli tolovlar
+    WHERE p.payment_date = CURRENT_DATE  -- Bugungi kunga tegishli tolovlar
     AND c.id = $1
     GROUP BY z.zone_name, c.login, c.id, day
     ORDER BY day DESC, total_collected DESC;
