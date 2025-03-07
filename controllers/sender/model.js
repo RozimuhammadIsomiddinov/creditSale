@@ -1,10 +1,13 @@
 const pool = require("../../config/dbconfig");
 
 const selectByZone = `
-    SELECT id,  name,   product_name,   cost,
-            phone_number,   phone_number2,  workplace,
-            payment,    given_day
-            FROM users AS u WHERE zone = $1;
+ SELECT u.id, u.name, u.product_name, u.cost, 
+       u.phone_number, u.phone_number2, u.workplace,
+       u.payment, u.given_day
+FROM users AS u 
+JOIN zone AS z ON z.id = u.zone
+WHERE u.zone = $1;
+
 `;
 
 const selectZone = async (zone_name) => {
