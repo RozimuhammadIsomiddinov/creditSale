@@ -31,7 +31,7 @@ const createAdmin = async () => {
     const checkAdmin = await pool.query(selectById, [NAME]);
 
     if (checkAdmin.rows.length > 0) {
-      console.log("Admin allaqachon mavjud.");
+      //console.log("Admin allaqachon mavjud.");
       return;
     }
 

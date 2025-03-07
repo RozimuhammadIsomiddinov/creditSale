@@ -1,5 +1,21 @@
 const { getById } = require("../users/model");
-const { to_recycle, out_recycle, select_recycle_users } = require("./model");
+const {
+  to_recycle,
+  out_recycle,
+  select_recycle_users,
+  select_paid_users,
+} = require("./model");
+
+const get_paid_users = async (req, res) => {
+  try {
+    const result = await select_paid_users();
+    return res.status(200).json(result);
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Error from get_paid_users", error: e.message });
+  }
+};
 
 const get_recycle = async (req, res) => {
   try {
@@ -41,4 +57,4 @@ const delete_recycle = async (req, res) => {
   }
 };
 
-module.exports = { put_recycle, delete_recycle, get_recycle };
+module.exports = { get_paid_users, put_recycle, delete_recycle, get_recycle };

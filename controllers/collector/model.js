@@ -196,14 +196,14 @@ const createCollector = async () => {
       const checkCollector = await pool.query(selectByName, [login]);
 
       if (checkCollector.rows.length > 0) {
-        console.log(`Collector ${login} allaqachon mavjud.`);
+        // console.log(`Collector ${login} allaqachon mavjud.`);
         continue;
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       await pool.query(insertInto, [login, hashedPassword]);
 
-      // console.log(`collector ${login} yaratildi.`);
+      console.log(`collector ${login} yaratildi.`);
     }
   } catch (e) {
     console.error("Xatolik createCollector: " + e.message);

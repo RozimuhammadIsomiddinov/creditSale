@@ -3,6 +3,7 @@ const {
   put_recycle,
   delete_recycle,
   get_recycle,
+  get_paid_users,
 } = require("../controllers/recycle/recycle");
 
 const router = express.Router();
@@ -59,6 +60,7 @@ const router = express.Router();
  */
 
 router.get("/", get_recycle);
+router.get("/paid-all", get_paid_users);
 router.put("/to/:id", put_recycle);
 router.delete("/out/:id", delete_recycle);
 
