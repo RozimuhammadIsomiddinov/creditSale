@@ -30,7 +30,7 @@ LEFT JOIN (
     FROM payment
     ORDER BY user_id, payment_date DESC
 ) p ON users.id = p.user_id
-WHERE users.zone = $1 
+WHERE users.recycle = false AND users.zone = $1 
 LIMIT $2 OFFSET $3;
 `;
 
@@ -63,7 +63,7 @@ LEFT JOIN (
     FROM payment
     ORDER BY user_id, payment_date DESC
 ) p ON users.id = p.user_id
-  WHERE users.zone = $1 AND users.workplace = $2
+  WHERE users.recycle = false AND users.zone = $1 AND users.workplace = $2
  LIMIT $3 OFFSET $4;
 `;
 
@@ -96,7 +96,7 @@ LEFT JOIN (
     FROM payment
     ORDER BY user_id, payment_date DESC
 ) p ON users.id = p.user_id
-  WHERE users.zone = $1 AND users.workplace = $2 AND users.payment_status = $3
+  WHERE users.recycle = false AND users.zone = $1 AND users.workplace = $2 AND users.payment_status = $3
  LIMIT $4 OFFSET $5;
 `;
 
@@ -171,7 +171,6 @@ const updateQuery = `
       WHERE id = $14
       RETURNING *;
 `;
-
 const searchQuery = `
   SELECT 
     users.id,
@@ -193,22 +192,29 @@ const searchQuery = `
     users.updatedat,
     COALESCE(p.payment_amount, 0) AS last_payment_amount,
     p.payment_date AS last_payment_date 
-FROM users
-JOIN zone ON users.zone = zone.id
-JOIN workplace ON users.workplace = workplace.id
-JOIN payment ON payment.user_id = users.id 
-JOIN collector ON payment.collector_id = collector.id 
-LEFT JOIN (
-    SELECT DISTINCT ON (payment.user_id) payment.user_id, payment.payment_amount, payment.payment_date
-    FROM payment
-    ORDER BY payment.user_id, payment.payment_date DESC
-) p ON users.id = p.user_id
-WHERE 
-    (LENGTH($1) > 1 AND to_tsvector('simple', users.name) @@ plainto_tsquery($1)) 
-    OR users.name ILIKE $1
-    OR users.phone_number = $2
-    OR users.id::TEXT = $3;
+  FROM users
+  JOIN zone ON users.zone = zone.id
+  JOIN workplace ON users.workplace = workplace.id
+  JOIN payment ON payment.user_id = users.id 
+  JOIN collector ON payment.collector_id = collector.id 
+  LEFT JOIN (
+      SELECT DISTINCT ON (payment.user_id) 
+          payment.user_id, 
+          payment.payment_amount, 
+          payment.payment_date
+      FROM payment
+      ORDER BY payment.user_id, payment.payment_date DESC
+  ) p ON users.id = p.user_id
+  WHERE 
+    users.recycle = false 
+    AND (
+      (LENGTH($1) > 1 AND to_tsvector('simple', users.name) @@ plainto_tsquery($1)) 
+      OR users.name ILIKE $1
+      OR users.phone_number = $2
+      OR users.id::TEXT = $3
+    );
 `;
+
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
 const countAllUsers = async () => {
