@@ -26,17 +26,17 @@ const getByZone = async (req, res) => {
     const worksheet = XLSX.utils.json_to_sheet(formattedResult);
 
     worksheet["!cols"] = [
-      { wch: 5 }, // ID (5 belgilik kenglik)
-      { wch: 20 }, // Ismi (15 belgilik kenglik)
-      { wch: 25 }, // Mahsulot_nomi (25 belgilik kenglik)
-      { wch: 20 }, // Narxi (10 belgilik kenglik)
-      { wch: 18 }, // Telefon_raqami_1 (18 belgilik kenglik)
-      { wch: 18 }, // Telefon_raqami_2 (18 belgilik kenglik)
-      { wch: 20 }, // Ishlash_joyi (20 belgilik kenglik)
+      { wch: 5 },
+      { wch: 20 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 18 },
+      { wch: 18 },
       { wch: 20 },
       { wch: 20 },
-      { wch: 15 }, // Tolagan_summasi (15 belgilik kenglik)
-      { wch: 15 }, // Berilgan_vaqti (15 belgilik kenglik)
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 15 },
     ];
     // Kitob (workbook) yaratish
     const workbook = XLSX.utils.book_new();
