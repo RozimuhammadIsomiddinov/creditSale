@@ -1,14 +1,21 @@
 const pool = require("../../config/dbconfig");
 
 const selectByZone = `
- SELECT u.id, u.name, u.product_name, u.cost, 
-       u.phone_number, u.phone_number2, u.zone AS zone_name, u.workplace AS workplace_name,
-       u.payment, u.given_day
-FROM users AS u 
-JOIN zone AS z ON u.id = z.zone
-JOIN workplace AS w ON u.id = w.workplace
+ SELECT 
+    u.id, 
+    u.name, 
+    u.product_name, 
+    u.cost, 
+    u.phone_number, 
+    u.phone_number2, 
+    z.zone_name, 
+    w.workplace_name,
+    u.payment, 
+    u.given_day
+FROM users AS u
+JOIN zone AS z ON u.zone = z.id
+JOIN workplace AS w ON u.workplace = w.id
 WHERE z.zone_name ILIKE $1;
-
 `;
 
 const selectZone = async (zone_name) => {
