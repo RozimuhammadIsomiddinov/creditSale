@@ -6,7 +6,7 @@ const selectByZone = `
        u.payment, u.given_day
 FROM users AS u 
 JOIN zone AS z ON z.id = u.zone
-WHERE u.zone = $1;
+WHERE z.zone_name ILIKE $1;
 
 `;
 
