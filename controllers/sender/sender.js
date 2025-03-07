@@ -43,10 +43,10 @@ const getByZone = async (req, res) => {
     XLSX.utils.book_append_sheet(workbook, worksheet, `${zone_name}'s users`);
 
     // Excel faylni vaqtinchalik saqlash
-    const filePath = path.join(__dirname, "users.xlsx");
+    const filePath = path.join(__dirname, `${zone_name}.xlsx`);
     XLSX.writeFile(workbook, filePath);
     // Faylni foydalanuvchiga jo'natish
-    res.download(filePath, "users.xlsx", (err) => {
+    res.download(filePath, `${zone_name}.xlsx`, (err) => {
       if (err) {
         console.error("Faylni jo'natishda xatolik:", err);
         res.status(500).send("Faylni jo'natishda xatolik yuz berdi.");
