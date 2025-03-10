@@ -130,7 +130,7 @@ LEFT JOIN (
     FROM payment 
     ORDER BY user_id, payment_date DESC 
 ) p ON users.id = p.user_id 
-WHERE users.id = 1;
+WHERE users.id = $1;
 `;
 
 const create = `
