@@ -101,35 +101,37 @@ LEFT JOIN (
 `;
 
 const selectByIdQuery = `SELECT 
-    users.id,
-    users.name,
-    users.product_name,
-    users.cost,
-    users.phone_number,
-    users.phone_number2,
-    users.time,
-    users.seller,
-    zone.zone_name AS zone_name,  
+    users.id, 
+    users.name, 
+    users.product_name, 
+    users.cost, 
+    users.phone_number, 
+    users.phone_number2, 
+    users.time, 
+    users.seller, 
+    zone.zone_name AS zone_name, 
     workplace.workplace_name AS workplace_name, 
-    users.payment_status,
-    users.monthly_income,
-    users.payment,
-    users.passport_series,
-    users.description,
-    users.given_day,
-    users.recycle,
-    users.updatedat,
-    COALESCE(p.payment_amount, 0) AS last_payment_amount,
+    users.payment_status, 
+    users.monthly_income, 
+    users.payment, 
+    users.passport_series, 
+    users.description, 
+    users.given_day, 
+    users.recycle, 
+    users.updatedat, 
+    COALESCE(p.payment_amount, 0) AS last_payment_amount, 
+    users.cost - COALESCE(users.payment, 0) AS rest, 
     p.payment_date AS last_payment_date 
-  FROM users
-  JOIN zone ON users.zone = zone.id
-  JOIN workplace ON users.workplace = workplace.id
-  LEFT JOIN (
-    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
-    FROM payment
-    ORDER BY user_id, payment_date DESC
-) p ON users.id = p.user_id
-   WHERE users.id = $1;`;
+FROM users 
+JOIN zone ON users.zone = zone.id 
+JOIN workplace ON users.workplace = workplace.id 
+LEFT JOIN ( 
+    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date 
+    FROM payment 
+    ORDER BY user_id, payment_date DESC 
+) p ON users.id = p.user_id 
+WHERE users.id = 1;
+`;
 
 const create = `
     INSERT INTO users (
