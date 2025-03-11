@@ -146,12 +146,10 @@ const addUser = async (req, res) => {
     !name ||
     !product_name ||
     !cost ||
-    !phone_number ||
     !zone_id ||
     !seller ||
     !workplace_id ||
-    !time ||
-    !passport_series
+    !time
   ) {
     return res
       .status(400)
