@@ -83,7 +83,7 @@ const select_paid_usersQuery = `
     FROM payment
     ORDER BY user_id, payment_date DESC
 ) p ON users.id = p.user_id
- WHERE users.payment >= users.cost;
+ WHERE users.payment >= users.cost AND users.recycle = false;
 `;
 const select_paid_users = async () => {
   try {
