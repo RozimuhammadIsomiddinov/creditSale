@@ -218,8 +218,7 @@ const updateUser = async (req, res) => {
     !seller ||
     !zone_id ||
     !workplace_id ||
-    !time ||
-    !passport_series
+    !time
   ) {
     return res
       .status(400)
