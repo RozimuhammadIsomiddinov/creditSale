@@ -145,7 +145,6 @@ const addUser = async (req, res) => {
     !name ||
     !product_name ||
     !cost ||
-    !phone_number ||
     !zone_id ||
     !seller ||
     !workplace_id ||
