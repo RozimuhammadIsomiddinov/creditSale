@@ -1,5 +1,4 @@
 const { logger } = require("../../logs/log");
-const { maxPayment } = require("../payments/model");
 const { getByIdWorkplace } = require("../workplace/model");
 const { getByIdZones } = require("../zone/model");
 const {
@@ -150,8 +149,7 @@ const addUser = async (req, res) => {
     !zone_id ||
     !seller ||
     !workplace_id ||
-    !time ||
-    !passport_series
+    !time
   ) {
     return res
       .status(400)
@@ -220,8 +218,7 @@ const updateUser = async (req, res) => {
     !seller ||
     !zone_id ||
     !workplace_id ||
-    !time ||
-    !passport_series
+    !time
   ) {
     return res
       .status(400)

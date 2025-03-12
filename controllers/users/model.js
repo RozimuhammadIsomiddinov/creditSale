@@ -173,6 +173,7 @@ const updateQuery = `
       WHERE id = $14
       RETURNING *;
 `;
+
 const searchQuery = `
   SELECT 
     users.id,
@@ -197,8 +198,6 @@ const searchQuery = `
   FROM users
   JOIN zone ON users.zone = zone.id
   JOIN workplace ON users.workplace = workplace.id
-  JOIN payment ON payment.user_id = users.id 
-  JOIN collector ON payment.collector_id = collector.id 
   LEFT JOIN (
       SELECT DISTINCT ON (payment.user_id) 
           payment.user_id, 
@@ -213,6 +212,7 @@ const searchQuery = `
       (LENGTH($1) > 1 AND to_tsvector('simple', users.name) @@ plainto_tsquery($1)) 
       OR users.name ILIKE $1
       OR users.phone_number = $2
+      OR users.phone_number2 = $2
       OR users.id::TEXT = $3
     );
 `;
