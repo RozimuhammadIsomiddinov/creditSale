@@ -98,13 +98,14 @@ const updateQuery = `
 
 //har bir zone bo'yicha hamma pul
 const allSumByZone = `
-  SELECT z.id AS zone_id,
-       z.zone_name,
-       COALESCE(SUM(u.cost), 0) AS total_cost
+SELECT 
+    z.id AS zone_id,
+    z.zone_name,
+    COALESCE(SUM(u.cost), 0) - COALESCE(SUM(p.payment_amount), 0) AS total_cost
 FROM zone AS z
 LEFT JOIN users AS u ON u.zone = z.id
+LEFT JOIN payment AS p ON p.zone_id = z.id
 GROUP BY z.zone_name, z.id;
-
 `;
 
 //tushgan pullar
