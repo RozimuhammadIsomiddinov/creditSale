@@ -219,11 +219,15 @@ const searchQuery = `
 
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
+const BATCH_SIZE = 1000; // Har bir batch uchun maksimal foydalanuvchilar soni
+
 const fakeUsers = async () => {
   const checkUsers = await pool.query("SELECT COUNT(*) FROM users");
+
   if (parseInt(checkUsers.rows[0].count) > 0) {
-    return "6000 talik userlar yaratilgan";
+    return "6000 talik userlar allaqachon yaratilgan";
   }
+
   const users = Array.from({ length: 6000 }, (_, i) => [
     "avaz",
     "telefon",
@@ -239,33 +243,42 @@ const fakeUsers = async () => {
     "yaxshi odam",
     new Date(),
   ]);
-  console.log(users);
-  const placeholders = users
-    .map(
-      (_, i) => `($${i * 13 + 1}, $${i * 13 + 2}, $${i * 13 + 3}, $${
-        i * 13 + 4
-      }, 
-               $${i * 13 + 5}, $${i * 13 + 6}, $${i * 13 + 7}, $${i * 13 + 8}, 
-               $${i * 13 + 9}, $${i * 13 + 10}, $${i * 13 + 11}, $${
-        i * 13 + 12
-      }, 
-               $${i * 13 + 13})`
-    )
-    .join(", ");
-  const flattenedValues = users.flat();
 
-  const query = `
-    INSERT INTO users (
-      name, product_name, cost, phone_number, phone_number2, time, seller, zone,
-      workplace, monthly_income, passport_series, description, given_day
-    ) VALUES ${placeholders} RETURNING *;
-  `;
+  for (let i = 0; i < users.length; i += BATCH_SIZE) {
+    const batch = users.slice(i, i + BATCH_SIZE);
 
-  const result = await pool.query(query, flattenedValues);
-  return result.rows;
+    const placeholders = batch
+      .map(
+        (_, j) => `(${Array.from({ length: 13 }, (_, k) => `$${j * 13 + k + 1}`).join(", ")})`
+      )
+      .join(", ");
+
+    const flattenedValues = batch.flat();
+
+    const query = `
+      INSERT INTO users (
+        name, product_name, cost, phone_number, phone_number2, time, seller, zone,
+        workplace, monthly_income, passport_series, description, given_day
+      ) VALUES ${placeholders} RETURNING *;
+    `;
+
+    try {
+      await pool.query(query, flattenedValues);
+      console.log(`Batch ${i / BATCH_SIZE + 1} (${batch.length} foydalanuvchi) qo'shildi`);
+    } catch (err) {
+      console.error("Batch qo'shishda xato:", err.message);
+      throw err;
+    }
+  }
+
+  return "Barcha foydalanuvchilar muvaffaqiyatli qo'shildi!";
 };
 
-fakeUsers().then((a) => console.log(a));
+// Funksiyani ishga tushirish
+fakeUsers()
+  .then((msg) => console.log(msg))
+  .catch((err) => console.error("Xatolik:", err));
+
 const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
