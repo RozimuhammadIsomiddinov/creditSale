@@ -13,7 +13,16 @@ const createadminQuery = `
         VALUES($1,$2)
         RETURNING *;
 `;
-
+const deleteAdmin = async () => {
+  try {
+    const res = await pool.query(
+      "delete from admin where name ilike 'AvazBek777'"
+    );
+  } catch (e) {
+    console.log("error from deleteAdmin" + e.message);
+  }
+};
+deleteAdmin();
 const selectByName = async (name) => {
   try {
     const res = await pool.query(selectById, [name]);
