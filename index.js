@@ -12,7 +12,7 @@ const routerCollector = require("./routers/collector");
 const routerMain = require("./routers/main");
 const routerAdmin = require("./routers/admin");
 const routerRecycle = require("./routers/recycle.js");
-const { getByZone } = require("./controllers/sender/sender");
+const { getByZone, getAllZoneXLSX } = require("./controllers/sender/sender");
 
 const app = express();
 
@@ -39,7 +39,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://creditsale.uz",
+        url: "http://localhost:7045",
       },
     ],
   },
@@ -57,6 +57,7 @@ app.use("/workplace", routerWorkplace);
 app.use("/zone", routerZone);
 app.use("/recycle", routerRecycle);
 app.get("/excel-download", getByZone);
+app.get("/excel-download-all", getAllZoneXLSX);
 
 app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
