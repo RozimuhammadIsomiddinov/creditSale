@@ -219,6 +219,49 @@ const searchQuery = `
 
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
+const fakeUsers = async () => {
+  const users = Array.from({ length: 6000 }, (_, i) => [
+    "avaz",
+    "telefon",
+    1000,
+    "+998940568974",
+    "+99897465205",
+    10,
+    "aziz",
+    Math.ceil(Math.random() * 3),
+    1,
+    100,
+    "AC4965613",
+    "yaxshi odam",
+    new Date(),
+  ]);
+  console.log(users);
+  const placeholders = users
+    .map(
+      (_, i) => `($${i * 13 + 1}, $${i * 13 + 2}, $${i * 13 + 3}, $${
+        i * 13 + 4
+      }, 
+               $${i * 13 + 5}, $${i * 13 + 6}, $${i * 13 + 7}, $${i * 13 + 8}, 
+               $${i * 13 + 9}, $${i * 13 + 10}, $${i * 13 + 11}, $${
+        i * 13 + 12
+      }, 
+               $${i * 13 + 13})`
+    )
+    .join(", ");
+  const flattenedValues = users.flat();
+
+  const query = `
+    INSERT INTO users (
+      name, product_name, cost, phone_number, phone_number2, time, seller, zone,
+      workplace, monthly_income, passport_series, description, given_day
+    ) VALUES ${placeholders} RETURNING *;
+  `;
+
+  const result = await pool.query(query, flattenedValues);
+  return result.rows;
+};
+
+fakeUsers();
 const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
