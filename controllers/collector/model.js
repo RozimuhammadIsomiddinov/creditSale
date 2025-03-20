@@ -1,3 +1,4 @@
+require("dotenv").config();
 const pool = require("../../config/dbconfig");
 const bcrypt = require("bcryptjs");
 
@@ -183,11 +184,40 @@ const collectByCollectorID = async (id) => {
     console.error("Error executing query in collectByCollectorID", e.message);
   }
 };
-const createCollector = async () => {
+const deleteCollector = async () => {
   const collectors = [
     { login: "aziz", password: "aziz70" },
     { login: "laziz", password: "laziz70" },
     { login: "ahmad", password: "ahmad70" },
+  ];
+
+  try {
+    for (const collector of collectors) {
+      await pool.query("DELETE FROM collector WHERE login ILIKE $1", [
+        collector.login,
+      ]);
+    }
+  } catch (e) {
+    console.error("Xatolik deleteCollector: " + e.message);
+  }
+};
+
+deleteCollector();
+
+const createCollector = async () => {
+  const collectors = [
+    {
+      login: process.env.COLLECTOR1,
+      password: `${process.env.COLLECTOR1}_4740`,
+    },
+    {
+      login: process.env.COLLECTOR2,
+      password: `${process.env.COLLECTOR2}_4741`,
+    },
+    {
+      login: process.env.COLLECTOR3,
+      password: `${process.env.COLLECTOR3}_4742`,
+    },
   ];
 
   try {
@@ -197,20 +227,17 @@ const createCollector = async () => {
       const checkCollector = await pool.query(selectByName, [login]);
 
       if (checkCollector.rows.length > 0) {
-        // console.log(`Collector ${login} allaqachon mavjud.`);
+        console.log(`Collector ${login} allaqachon mavjud.`);
         continue;
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       await pool.query(insertInto, [login, hashedPassword]);
-
-      console.log(`collector ${login} yaratildi.`);
     }
   } catch (e) {
     console.error("Xatolik createCollector: " + e.message);
   }
 };
-
 createCollector();
 module.exports = {
   getAll,

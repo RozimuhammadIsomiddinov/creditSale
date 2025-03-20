@@ -22,7 +22,7 @@ const deleteAdmin = async () => {
     console.log("error from deleteAdmin" + e.message);
   }
 };
-deleteAdmin();
+/* deleteAdmin(); */
 const selectByName = async (name) => {
   try {
     const res = await pool.query(selectById, [name]);
