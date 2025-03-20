@@ -222,7 +222,7 @@ const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 const fakeUsers = async () => {
   const checkUsers = await pool.query("SELECT COUNT(*) FROM users");
   if (parseInt(checkUsers.rows[0].count) > 0) {
-    return;
+    return "6000 talik userlar yaratilgan";
   }
   const users = Array.from({ length: 6000 }, (_, i) => [
     "avaz",
@@ -232,7 +232,7 @@ const fakeUsers = async () => {
     "+99897465205",
     10,
     "aziz",
-    Math.ceil(Math.random() * 3),
+    Math.ceil(Math.random() * 15),
     1,
     100,
     "AC4965613",
