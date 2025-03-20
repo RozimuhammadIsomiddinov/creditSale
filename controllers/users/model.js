@@ -220,6 +220,10 @@ const searchQuery = `
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
 const fakeUsers = async () => {
+  const checkUsers = await pool.query("SELECT COUNT(*) FROM users");
+  if (parseInt(checkUsers.rows[0].count) > 0) {
+    return;
+  }
   const users = Array.from({ length: 6000 }, (_, i) => [
     "avaz",
     "telefon",
@@ -261,8 +265,8 @@ const fakeUsers = async () => {
   return result.rows;
 };
 
-/* fakeUsers();
- */ const countAllUsers = async () => {
+fakeUsers();
+const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
     return res.rows[0];
