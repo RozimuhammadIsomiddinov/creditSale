@@ -273,12 +273,12 @@ const fakeUsers = async () => {
 
   return "Barcha foydalanuvchilar muvaffaqiyatli qo'shildi!";
 };
-
+/*
 // Funksiyani ishga tushirish
 fakeUsers()
   .then((msg) => console.log(msg))
   .catch((err) => console.error("Xatolik:", err));
-
+*/
 const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
