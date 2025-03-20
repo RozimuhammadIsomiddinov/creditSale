@@ -261,8 +261,8 @@ const fakeUsers = async () => {
   return result.rows;
 };
 
-fakeUsers();
-const countAllUsers = async () => {
+/* fakeUsers();
+ */ const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
     return res.rows[0];
