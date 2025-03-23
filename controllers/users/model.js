@@ -239,7 +239,6 @@ const fakeUsers = async () => {
     "yaxshi odam",
     new Date(),
   ]);
-  console.log(users);
   const placeholders = users
     .map(
       (_, i) => `($${i * 13 + 1}, $${i * 13 + 2}, $${i * 13 + 3}, $${
