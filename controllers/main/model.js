@@ -22,35 +22,45 @@ const payedUsersCountQuery = `
 //2.
 //bu oy to'lamaganlar  yani qancha to'lanishi kerak
 const selectNotPayedUsersQuery = `
-    SELECT 
-    users.id,
-    users.name,
-    users.product_name,
-    users.cost,
-    users.phone_number,
-    users.phone_number2,
-    users.time,
-    users.seller,
-    zone.zone_name AS zone_name,  
-    workplace.workplace_name AS workplace_name, 
-    users.payment_status,
-    users.monthly_income,
-    users.payment,
-    users.passport_series,
-    users.description,
-    users.given_day,
-    users.updatedat,
-    COALESCE(p.payment_amount, 0) AS last_payment_amount,
-    p.payment_date AS last_payment_date 
-  FROM users
-  JOIN zone ON users.zone = zone.id
-  JOIN workplace ON users.workplace = workplace.id
-  LEFT JOIN (
-    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+WITH latest_payment AS (
+  SELECT 
+    p.user_id, 
+    p.payment_amount, 
+    p.payment_date
+  FROM payment p
+  JOIN (
+    SELECT user_id, MAX(payment_date) AS max_date
     FROM payment
-    ORDER BY user_id, payment_date DESC
-) p ON users.id = p.user_id
-   WHERE payment_status = false LIMIT $1 OFFSET $2;
+    GROUP BY user_id
+  ) mp ON p.user_id = mp.user_id AND p.payment_date = mp.max_date
+)
+SELECT 
+    u.id,
+    u.name,
+    u.product_name,
+    u.cost,
+    u.phone_number,
+    u.phone_number2,
+    u.time,
+    u.seller,
+    z.zone_name AS zone_name,  
+    w.workplace_name AS workplace_name, 
+    u.payment_status,
+    u.monthly_income,
+    u.payment,
+    u.passport_series,
+    u.description,
+    u.given_day,
+    u.updatedat,
+    COALESCE(lp.payment_amount, 0) AS last_payment_amount,
+    lp.payment_date AS last_payment_date
+FROM users u
+JOIN zone z ON u.zone = z.id
+JOIN workplace w ON u.workplace = w.id
+LEFT JOIN latest_payment lp ON lp.user_id = u.id
+WHERE u.payment_status = false
+ORDER BY u.updatedat DESC
+LIMIT $1 OFFSET $2;
 `;
 
 //bu oy to'lamagan userlar soni
@@ -122,6 +132,15 @@ const countDayQuery = `
     WHERE DATE(p.payment_date) = CURRENT_DATE;
 `;
 const selectDayQuery = `
+WITH latest_payments AS (
+    SELECT DISTINCT ON (p.user_id)
+        p.user_id,
+        p.payment_amount,
+        p.payment_date
+    FROM payment p
+    WHERE p.payment_date::date = CURRENT_DATE
+    ORDER BY p.user_id, p.payment_date DESC
+)
 SELECT
     u.id,
     u.name,
@@ -140,23 +159,14 @@ SELECT
     u.description,
     u.given_day,
     u.updatedat,
-    COALESCE(p.payment_amount, 0) AS last_payment_amount,
-    p.payment_date AS last_payment_date
+    COALESCE(lp.payment_amount, 0) AS last_payment_amount,
+    lp.payment_date AS last_payment_date
 FROM users u
 JOIN zone z ON u.zone = z.id
 JOIN workplace w ON u.workplace = w.id
-LEFT JOIN LATERAL (
-    SELECT p.payment_amount, p.payment_date 
-    FROM payment p 
-    WHERE p.user_id = u.id 
-    ORDER BY p.payment_date DESC  -- Eng oxirgi tolovni tanlash
-    LIMIT 1
-) p ON true
+JOIN latest_payments lp ON lp.user_id = u.id
 WHERE u.payment_status = true
-  AND p.payment_date IS NOT NULL  -- Faqat tolov qilgan userlarni olish
-  AND DATE(p.payment_date) = CURRENT_DATE  -- Faqat bugungi tolovlar
 ORDER BY u.updatedat DESC, u.id;
-
 `;
 //1.
 const selectIncome = async () => {

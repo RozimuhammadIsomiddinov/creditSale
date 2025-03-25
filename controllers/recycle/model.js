@@ -21,70 +21,88 @@ WHERE id = $1
 RETURNING *;
 `;
 const select_recycle_usersQuery = `
+WITH latest_payment AS (
   SELECT 
-    users.id,
-    users.name,
-    users.product_name,
-    users.cost,
-    users.phone_number,
-    users.phone_number2,
-    users.time,
-    users.seller,
-    zone.zone_name AS zone_name,  
-    workplace.workplace_name AS workplace_name, 
-    users.payment_status,
-    users.monthly_income,
-    users.payment,
-    users.passport_series,
-    users.description,
-    users.given_day,
-    users.recycle,
-    users.updatedat,
-    COALESCE(p.payment_amount, 0) AS last_payment_amount,
-    p.payment_date AS last_payment_date 
-  FROM users
-  JOIN zone ON users.zone = zone.id
-  JOIN workplace ON users.workplace = workplace.id
-  LEFT JOIN (
-    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
+    p.user_id, 
+    p.payment_amount, 
+    p.payment_date
+  FROM payment p
+  JOIN (
+    SELECT user_id, MAX(payment_date) AS max_date
     FROM payment
-    ORDER BY user_id, payment_date DESC
-) p ON users.id = p.user_id
-   WHERE users.recycle = true;
+    GROUP BY user_id
+  ) mp ON p.user_id = mp.user_id AND p.payment_date = mp.max_date
+)
+SELECT 
+  u.id,
+  u.name,
+  u.product_name,
+  u.cost,
+  u.phone_number,
+  u.phone_number2,
+  u.time,
+  u.seller,
+  z.zone_name AS zone_name,  
+  w.workplace_name AS workplace_name, 
+  u.payment_status,
+  u.monthly_income,
+  u.payment,
+  u.passport_series,
+  u.description,
+  u.given_day,
+  u.recycle,
+  u.updatedat,
+  COALESCE(lp.payment_amount, 0) AS last_payment_amount,
+  lp.payment_date AS last_payment_date
+FROM users u
+JOIN zone z ON u.zone = z.id
+JOIN workplace w ON u.workplace = w.id
+LEFT JOIN latest_payment lp ON lp.user_id = u.id
+WHERE u.recycle = true
+ORDER BY u.updatedat DESC;
+`;
+const select_paid_usersQuery = `
+WITH latest_payment AS (
+  SELECT 
+    p.user_id, 
+    p.payment_amount, 
+    p.payment_date
+  FROM payment p
+  JOIN (
+    SELECT user_id, MAX(payment_date) AS max_date
+    FROM payment
+    GROUP BY user_id
+  ) mp ON p.user_id = mp.user_id AND p.payment_date = mp.max_date
+)
+SELECT 
+  u.id,
+  u.name,
+  u.product_name,
+  u.cost,
+  u.phone_number,
+  u.phone_number2,
+  u.time,
+  u.seller,
+  z.zone_name AS zone_name,  
+  w.workplace_name AS workplace_name, 
+  u.payment_status,
+  u.monthly_income,
+  u.payment,
+  u.passport_series,
+  u.description,
+  u.given_day,
+  u.recycle,
+  u.updatedat,
+  COALESCE(lp.payment_amount, 0) AS last_payment_amount,
+  lp.payment_date AS last_payment_date
+FROM users u
+JOIN zone z ON u.zone = z.id
+JOIN workplace w ON u.workplace = w.id
+LEFT JOIN latest_payment lp ON lp.user_id = u.id
+WHERE u.payment >= u.cost AND u.recycle = false
+ORDER BY u.updatedat DESC;
 `;
 
-const select_paid_usersQuery = `
-    SELECT 
-    users.id,
-    users.name,
-    users.product_name,
-    users.cost,
-    users.phone_number,
-    users.phone_number2,
-    users.time,
-    users.seller,
-    zone.zone_name AS zone_name,  
-    workplace.workplace_name AS workplace_name, 
-    users.payment_status,
-    users.monthly_income,
-    users.payment,
-    users.passport_series,
-    users.description,
-    users.given_day,
-    users.recycle,
-    users.updatedat,
-    COALESCE(p.payment_amount, 0) AS last_payment_amount,
-    p.payment_date AS last_payment_date 
-  FROM users
-  JOIN zone ON users.zone = zone.id
-  JOIN workplace ON users.workplace = workplace.id
-  LEFT JOIN (
-    SELECT DISTINCT ON (user_id) user_id, payment_amount, payment_date
-    FROM payment
-    ORDER BY user_id, payment_date DESC
-) p ON users.id = p.user_id
- WHERE users.payment >= users.cost AND users.recycle = false;
-`;
 const select_paid_users = async () => {
   try {
     const { rows, rowCount } = await pool.query(select_paid_usersQuery);
