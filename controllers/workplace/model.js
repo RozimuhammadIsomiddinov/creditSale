@@ -44,7 +44,7 @@ const getByIdWorkplace = async (id) => {
 };
 
 const createWorkplace = async (workplace_name, description) => {
-  workplace_name = workplace_name.toLowerCase();
+  workplace_name = workplace_name.toUpperCase();
   try {
     const res = await pool.query(insertInto, [workplace_name, description]);
     return res.rows[0];
@@ -54,7 +54,7 @@ const createWorkplace = async (workplace_name, description) => {
 };
 
 const updatedWorkplace = async (id, workplace_name, description) => {
-  workplace_name = workplace_name.toLowerCase();
+  workplace_name = workplace_name.toUpperCase();
   try {
     const res = await pool.query(updateQuery, [
       workplace_name,

@@ -282,11 +282,11 @@ const fakeUsers = async () => {
   const flattenedValues = users.flat();
 
   const query = `
-    INSERT INTO users (
-      name, product_name, cost, phone_number, phone_number2, time, seller, zone,
-      workplace, monthly_income, passport_series, description, given_day
+      INSERT INTO users (
+        name, product_name, cost, phone_number, phone_number2, time, seller, zone,
+        workplace, monthly_income, passport_series, description, given_day
     ) VALUES ${placeholders} RETURNING *;
-  `;
+    `;
 
   const result = await pool.query(query, flattenedValues);
   return result.rows;

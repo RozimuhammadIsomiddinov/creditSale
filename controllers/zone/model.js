@@ -221,7 +221,7 @@ const getByZoneAndWorkplace = async (id, zone_id, page = 1, limit = 2000) => {
   }
 };
 const createZone = async (zone_name, description) => {
-  zone_name = zone_name.toLowerCase();
+  zone_name = zone_name.toUpperCase();
   try {
     const res = await pool.query(insertInto, [zone_name, description]);
     return res.rows[0];
@@ -230,7 +230,7 @@ const createZone = async (zone_name, description) => {
   }
 };
 const updatedZone = async (id, zone_name, description) => {
-  zone_name = zone_name.toLowerCase();
+  zone_name = zone_name.toUpperCase();
 
   try {
     const res = await pool.query(updateQuery, [zone_name, description, id]);
