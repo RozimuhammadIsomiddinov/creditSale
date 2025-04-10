@@ -39,7 +39,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://45.138.158.119:7045",
+        url: "https://creditsale.uz",
       },
     ],
   },
