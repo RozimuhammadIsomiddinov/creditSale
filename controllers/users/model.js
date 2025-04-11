@@ -290,10 +290,10 @@ const fakeUsers = async (count = 1000) => {
   return `${result.rowCount} ta user muvaffaqiyatli yaratildi.`;
 };
 
-fakeUsers(5000)
+/* fakeUsers(5000)
   .then(console.log)
   .catch((err) => console.error("Xatolik:", err.message));
-
+ */
 const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
