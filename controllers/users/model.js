@@ -247,26 +247,24 @@ const searchQuery = `
 
 const deleteUserQuery = `DELETE FROM users WHERE id = $1;`;
 
-const fakeUsers = async () => {
+const fakeUsers = async (count = 1000) => {
   const checkUsers = await pool.query("SELECT COUNT(*) FROM users");
-  if (parseInt(checkUsers.rows[0].count) > 0) {
-    return "Userlar allaqachon mavjud.";
-  }
+  console.log(`Bazada ${checkUsers.rows[0].count} ta user bor`);
 
-  const users = Array.from({ length: 1000 }, () => [
-    "avaz", // name
-    "telefon", // product_name
-    1000, // cost
-    "+998940568974", // phone_number
-    "+99897465205", // phone_number2
-    10, // time
-    "aziz", // seller
-    1, // zone
-    1, // workplace
-    100, // monthly_income
-    "AC4965613", // passport_series
-    "yaxshi odam", // description
-    new Date(), // given_day
+  const users = Array.from({ length: count }, () => [
+    "avaz",
+    "telefon",
+    1000,
+    "+998940568974",
+    "+99897465205",
+    10,
+    "aziz",
+    1,
+    1,
+    100,
+    "AC4965613",
+    "yaxshi odam",
+    new Date(),
   ]);
 
   const placeholders = users
@@ -292,9 +290,10 @@ const fakeUsers = async () => {
   return `${result.rowCount} ta user muvaffaqiyatli yaratildi.`;
 };
 
-fakeUsers()
+fakeUsers(5000)
   .then(console.log)
   .catch((err) => console.error("Xatolik:", err.message));
+
 const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
