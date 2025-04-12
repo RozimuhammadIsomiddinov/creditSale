@@ -109,7 +109,7 @@ const addPayment = async (
 };
 
 const paymentHistory = async (id) => {
-  if (!id) throw new Error("send an id");
+  console.log(id);
   try {
     const res = await pool.query(paymentHistoryQuery, [id]);
     return res.rows;
