@@ -16,7 +16,7 @@ const payedUsersMoneyQuery = `
 
 //to'lagan userlar
 const payedUsersCountQuery = `
-    SELECT COUNT(*) FROM users WHERE payment != 0 WHERE recycle = false; 
+    SELECT COUNT(*) FROM users WHERE payment != 0 AND recycle = false; 
 `;
 
 //2.
