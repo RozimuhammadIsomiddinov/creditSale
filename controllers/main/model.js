@@ -2,21 +2,21 @@ const pool = require("../../config/dbconfig");
 //1.
 //hamma pul
 const allMoneyQuery = `
-    SELECT SUM(cost) FROM users;
+    SELECT SUM(cost) FROM users WHERE recycle = false;
 `;
 //nechta userga sotilgan
 const allCountQuery = `
-    SELECT COUNT(*) FROM users;
+    SELECT COUNT(*) FROM users WHERE recycle = false;
 `;
 
 //to'laganlar
 const payedUsersMoneyQuery = `
-    SELECT SUM(payment) FROM users;
+    SELECT SUM(payment) FROM users WHERE recycle = false;
 `;
 
 //to'lagan userlar
 const payedUsersCountQuery = `
-    SELECT COUNT(*) FROM users WHERE payment != 0; 
+    SELECT COUNT(*) FROM users WHERE payment != 0 WHERE recycle = false; 
 `;
 
 //2.
@@ -58,14 +58,14 @@ FROM users u
 JOIN zone z ON u.zone = z.id
 JOIN workplace w ON u.workplace = w.id
 LEFT JOIN latest_payment lp ON lp.user_id = u.id
-WHERE u.payment_status = false
+WHERE u.payment_status = false AND  recycle = false
 ORDER BY u.updatedat DESC
 LIMIT $1 OFFSET $2;
 `;
 
 //bu oy to'lamagan userlar soni
 const notPayedUsersQuery = `
-    SELECT COUNT(*) FROM users WHERE payment_status = false;
+    SELECT COUNT(*) FROM users WHERE payment_status = false AND recycle = false;
 `;
 
 //3.
