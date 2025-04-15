@@ -312,8 +312,8 @@ const deleteFakeUsers = async (count = 5000) => {
 
   console.log(`${result.rowCount} ta user o'chirildi.`);
 };
-deleteFakeUsers(5000).then((a) => console.log(a));
-const countAllUsers = async () => {
+/* deleteFakeUsers(5000).then((a) => console.log(a));
+ */ const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
     return res.rows[0];
