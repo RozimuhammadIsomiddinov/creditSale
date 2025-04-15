@@ -227,7 +227,6 @@ const createCollector = async () => {
       const checkCollector = await pool.query(selectByName, [login]);
 
       if (checkCollector.rows.length > 0) {
-        console.log(`Collector ${login} allaqachon mavjud.`);
         continue;
       }
 

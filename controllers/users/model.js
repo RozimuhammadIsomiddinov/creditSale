@@ -294,6 +294,25 @@ const fakeUsers = async (count = 1000) => {
   .then(console.log)
   .catch((err) => console.error("Xatolik:", err.message));
  */
+
+const deleteFakeUsers = async (count = 5000) => {
+  const checkUsers = await pool.query("SELECT COUNT(*) FROM users");
+  console.log(`Bazada ${checkUsers.rows[0].count} ta user bor`);
+
+  const arr = [];
+  for (let i = 1; i <= count; i++) {
+    arr.push(i);
+  }
+
+  // id IN ($1, $2, $3, ...) qilish uchun placeholders yaratamiz
+  const placeholders = arr.map((_, i) => `$${i + 1}`).join(", ");
+
+  const query = `DELETE FROM users WHERE id IN (${placeholders})`;
+  const result = await pool.query(query, arr);
+
+  console.log(`${result.rowCount} ta user o'chirildi.`);
+};
+deleteFakeUsers(5000).then((a) => console.log(a));
 const countAllUsers = async () => {
   try {
     const res = await pool.query(countAll);
