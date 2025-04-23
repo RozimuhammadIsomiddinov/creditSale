@@ -124,7 +124,7 @@ SELECT
     COALESCE(SUM(u.cost), 0) - COALESCE(SUM(p.payment_amount), 0) AS total_cost
 FROM zone AS z
 LEFT JOIN users AS u ON u.zone = z.id
-LEFT JOIN payment AS p ON p.zone_id = z.id
+LEFT JOIN payment AS p ON p.user_id = u.id
 GROUP BY z.zone_name, z.id;
 `;
 
