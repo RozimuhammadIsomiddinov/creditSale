@@ -3,8 +3,20 @@ const {
   getByIdWorkplace,
   createWorkplace,
   updatedWorkplace,
+  searchWorkplace,
 } = require("./model");
 
+const searchWorkplaceCont = async (req, res) => {
+  const { q } = req.params;
+  try {
+    const result = await searchWorkplace(q);
+    res.status(200).json(result);
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: "Error from searchWorkplaceCont", error: e.message });
+  }
+};
 const selectAllWorkplace = async (req, res) => {
   try {
     const result = await getAllWorkplace();
@@ -86,6 +98,7 @@ const updateWorkplace = async (req, res) => {
 
 module.exports = {
   selectAllWorkplace,
+  searchWorkplaceCont,
   selectByIDWorkplace,
   addWorkplace,
   updateWorkplace,

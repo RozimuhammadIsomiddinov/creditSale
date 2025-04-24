@@ -4,6 +4,7 @@ const {
   selectByIDWorkplace,
   addWorkplace,
   updateWorkplace,
+  searchWorkplaceCont,
 } = require("../controllers/workplace/workplace");
 
 const router = express.Router();
@@ -96,6 +97,7 @@ const router = express.Router();
  */
 
 router.get("/", selectAllWorkplace);
+router.get("/search/:q", searchWorkplaceCont);
 router.get("/:id", selectByIDWorkplace);
 router.post("/add", addWorkplace);
 router.put("/update/:id", updateWorkplace);

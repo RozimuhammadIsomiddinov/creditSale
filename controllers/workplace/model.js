@@ -24,7 +24,17 @@ const updateQuery = `
     WHERE id = $3
     RETURNING *;
 `;
+const searchWorkplaceQuery = `
+    SELECT * 
+      FROM workplace AS w 
+      WHERE w.workplace_name ILIKE '%' || $1 || '%';
 
+`;
+
+const searchWorkplace = async (q) => {
+  const res = await pool.query(searchWorkplaceQuery, [q]);
+  return res.rows;
+};
 const getAllWorkplace = async () => {
   try {
     const res = await pool.query(selectQuery);
@@ -69,6 +79,7 @@ const updatedWorkplace = async (id, workplace_name, description) => {
 
 module.exports = {
   getAllWorkplace,
+  searchWorkplace,
   getByIdWorkplace,
   createWorkplace,
   updatedWorkplace,
