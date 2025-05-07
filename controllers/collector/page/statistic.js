@@ -7,6 +7,7 @@ const {
 const selectThisOldMonthByID = async (req, res) => {
   const { id } = req.params;
   if (!id) return res.status(400).json({ message: "send a collector id" });
+  console.log(id);
   try {
     const result1 = await getByIdCollector(id);
     if (!result1)
