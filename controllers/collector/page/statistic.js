@@ -17,6 +17,7 @@ const selectThisOldMonthByID = async (req, res) => {
     const result2 = await getOldMonthByID(id);
     return res.status(200).json({ this_month: result, old_month: result2 });
   } catch (e) {
+    console.log({ message: "Error from selectThisMonth", error: e.message });
     res
       .status(500)
       .json({ message: "Error from selectThisMonth", error: e.message });
