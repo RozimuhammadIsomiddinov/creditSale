@@ -39,7 +39,7 @@ const options = {
     },
     servers: [
       {
-        url: "https://creditsale.uz",
+        url: "https://creditsale.uz/api",
       },
     ],
   },
