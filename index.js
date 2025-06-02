@@ -48,18 +48,18 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
-app.use("/admin", routerAdmin);
-app.use("/collector", routerCollector);
-app.use("/main", routerMain);
-app.use("/payment", routerPayment);
-app.use("/users", routerUsers);
-app.use("/workplace", routerWorkplace);
-app.use("/zone", routerZone);
-app.use("/recycle", routerRecycle);
-app.get("/excel-download", getByZone);
-app.get("/excel-download-all", getAllZoneXLSX);
+app.use("/api/admin", routerAdmin);
+app.use("/api/collector", routerCollector);
+app.use("/api/main", routerMain);
+app.use("/api/payment", routerPayment);
+app.use("/api/users", routerUsers);
+app.use("/api/workplace", routerWorkplace);
+app.use("/api/zone", routerZone);
+app.use("/api/recycle", routerRecycle);
+app.get("/api/excel-download", getByZone);
+app.get("/api/excel-download-all", getAllZoneXLSX);
 
-app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT;
 app.listen(PORT);
