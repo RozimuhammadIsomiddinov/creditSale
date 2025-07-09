@@ -54,7 +54,7 @@ const addPaymentAmount = async (req, res) => {
     const result = await addPayment(
       id,
       collector_id,
-      zone_id,
+      res1.zone_id,
       payment_month,
       amountNumber,
       payment_date,
