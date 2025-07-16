@@ -71,7 +71,9 @@ app.use("/zone", routerZone);
 app.use("/recycle", routerRecycle);
 app.get("/excel-download", getByZone);
 app.get("/excel-download-all", getAllZoneXLSX);
-
+app.get("/hello", (req, res) => {
+  res.json({ message: "salom alekum" });
+});
 app.use("/api-swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
 const PORT = process.env.PORT;
