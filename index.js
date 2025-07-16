@@ -22,6 +22,7 @@ const allowedOrigins = [
   "https://credit-sale-front.vercel.app",
   "https://credit-sale-pro.vercel.app",
   "http://localhost:5173",
+  "http://192.168.0.76",
 ];
 
 app.use(
